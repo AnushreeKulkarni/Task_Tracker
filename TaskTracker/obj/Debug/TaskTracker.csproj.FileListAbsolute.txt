@@ -1,0 +1,7 @@
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\bin\Debug\TaskTracker.exe.config
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\bin\Debug\TaskTracker.exe
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\bin\Debug\TaskTracker.pdb
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.csproj.CoreCompileInputs.cache
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.exe
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.pdb
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.csproj.ResolveComReference.cache
