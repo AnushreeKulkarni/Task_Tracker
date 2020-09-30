@@ -18,27 +18,27 @@ namespace TaskTracker
 
             Console.WriteLine("Enter UserID");
             string id = Console.ReadLine();
-            logic.GetTaskList(id, isAdmin);            //GetTaskListMethod
+            /*logic.GetTaskList(id, isAdmin); */           //GetTaskListMethod
 
 
 
-            //ModelTask model = new ModelTask();
-            //model.TaskId = "T123459";
-            //model.TaskTitle = "TEPTASK";
-            //model.TaskDescription = "ABCXYZ";
-            //model.TaskType = "BUG";
-            //model.State = "BLOCKED";
-            //model.State = "LOW";
-            //model.AssignedTo = "1";
-            //model.Efforts = "26";
-            //model.PlannedStartDate = "4/16/2020";
-            //model.PlannedEndDate = "4/21/2020";
-            //model.AcualStartDate = "4/19/2020";
-            //model.ActualEndDate = "4/26/2020";
-            //model.HoursSpent = "20";
-            //model.HoursRemaining = "6";
-            //model.ExtraHours = "0";
-            //logic.UpdateTask(model);                //UpdateTaskMethod
+            ModelTask model = new ModelTask();
+            model.TaskId = "T123459";
+            model.TaskTitle = "TEPTASK";
+            model.TaskDescription = "ABCXYZ";
+            model.TaskType = "BUG";
+            model.State = "BLOCKED";
+            model.Priority = "LOW";
+            model.AssignedTo = "1";
+            model.Efforts = "26";
+            model.PlannedStartDate = "4/16/2020";
+            model.PlannedEndDate = "4/21/2020";
+            model.ActualStartDate = "4/19/2020";
+            model.ActualEndDate = "4/26/2020";
+            model.HoursSpent = "20";
+            model.HoursRemaining = "6";
+            model.ExtraHours = "0";
+            logic.UpdateTask(model);                //UpdateTaskMethod
 
             /* logic.AddTask(model);*/                  //AddTaskMethod
 
