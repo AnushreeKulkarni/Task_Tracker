@@ -32,8 +32,8 @@ namespace TaskTrackerWPF
     {
         string filePath = ConfigurationManager.AppSettings["xlsxPath"];
         
-        public static bool isAdmin = false;
-        string id = "2";
+        public static bool isAdmin = true;
+        string id = "1";
         public MainWindow()
         {
             InitializeComponent();
@@ -714,8 +714,8 @@ namespace TaskTrackerWPF
                 List<ModelTask> list3;
                 list3 = GetTaskList(id, isAdmin);
                 List<ReportGenerationModel> report;
-                string startDate = CalendarSD.SelectedDate.ToString();
-                string endDate = CalendarED.SelectedDate.ToString();
+                string startDate = txtSD.Text.ToString(); // CalendarSD.SelectedDate.ToString();
+                string endDate = txtED.Text.ToString(); // CalendarED.SelectedDate.ToString();
                 report = GenerateReport(list1, list2, list3,startDate,endDate);
             
 

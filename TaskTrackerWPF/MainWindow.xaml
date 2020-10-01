@@ -20,17 +20,20 @@
                             <DataGridTextColumn Header="Remarks" Binding="{Binding Remarks}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                        <Button x:Name="btnAdd" Click="AddDailyyTask" Margin="36,10,578.4,0" Content="Add DailyTask" Height="39" />
+                        <Button x:Name="btnAdd" Click="AddDailyyTask" Margin="0,10,720,0" Content="Add Daily Task" Height="39" />
                         <StackPanel x:Name="daily" Visibility="Hidden">
                         <Label x:Name="lblemp" Visibility="Hidden">Select Employee</Label>
-                        <ComboBox x:Name="dropdownEmp" Height="34" Margin="36,10,578,0" Visibility="Hidden" DisplayMemberPath="EmpName" SelectedValuePath="EmpId"></ComboBox>
+                            <ComboBox x:Name="dropdownEmp" Height="34" Margin="0,10,720,0" Visibility="Hidden" DisplayMemberPath="EmpName" SelectedValuePath="EmpId"></ComboBox>
                             <Label>Date</Label>
-                            <TextBox x:Name="txtDate" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
-                            <Label>TaskList</Label> <ComboBox x:Name="dropdownTask" Height="34" Margin="36,10,578,0" DisplayMemberPath="TaskTitle" SelectedValuePath="TaskId"></ComboBox>
-                        <Label>Hours</Label><TextBox x:Name="txtHours" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
-                        <Label>Remarks</Label><TextBox x:Name="txtRemarks" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
-                    <Button Click="AddDailyTask" Margin="36,10,578.4,0" Content="Add Daily Task" Height="39" />
-                            <Button x:Name="can" Click="CanAction" Margin="36,10,578.4,0" Content="Cancel" Height="39" />
+                            <TextBox x:Name="txtDate" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <Label>TaskList</Label>
+                            <ComboBox x:Name="dropdownTask" Height="34" Margin="0,10,720,0" DisplayMemberPath="TaskTitle" SelectedValuePath="TaskId"></ComboBox>
+                            <Label>Hours</Label>
+                            <TextBox x:Name="txtHours" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <Label>Remarks</Label>
+                            <TextBox x:Name="txtRemarks" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <Button Click="AddDailyTask" Margin="0,10,720,0" Content="Add Daily Task" Height="39" />
+                            <Button x:Name="can" Click="CanAction" Margin="0,10,720,0" Content="Cancel" Height="39" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
@@ -55,38 +58,38 @@
                                 <DataGridTextColumn Header="Actual End Date" Binding="{Binding ActualEndDate}"></DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button x:Name="btnAddTask" Click="AddTask" Margin="36,10,578.4,0" Content="Add Task" Height="39" />
-                        <Button x:Name="btnEditTask" Click="EdittTask" Margin="36,10,578.4,0" Content="Edit Task" Height="39" />
+                        <Button x:Name="btnAddTask" Click="AddTask" Margin="0,10,720,0" Content="Add Task" Height="39" />
+                        <Button x:Name="btnEditTask" Click="EdittTask" Margin="0,10,720,0" Content="Edit Task" Height="39" />
                             
                         <StackPanel x:Name="editUpdate" Visibility="Hidden" >
-                        <Button x:Name="Edit" Click="EditTask" Margin="36,10,578.4,0" Content="Select" Height="39" />
+                            <Button x:Name="Edit" Click="EditTask" Margin="0,10,720,0" Content="Select" Height="39" />
                         <Label>Ticket Number</Label>
-                        <TextBox x:Name="txtTicket" Height="34" IsReadOnly="False"  Margin="36,10,578.4,0"></TextBox>
+                            <TextBox x:Name="txtTicket" Height="34" IsReadOnly="False"  Margin="0,10,720,0"></TextBox>
                         <Label>Task ID</Label>
-                        <TextBox x:Name="txtTaskId" Height="34"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtTaskId" Height="34"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Task Title</Label>
-                        <TextBox x:Name="txtTaskTitle" Height="34" IsReadOnly="False" Margin="36,10,578,0" ></TextBox>
+                            <TextBox x:Name="txtTaskTitle" Height="34" IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Task Description</Label>
-                        <TextBox x:Name="txtTaskDesc" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtTaskDesc" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Task Type</Label>
-                        <TextBox x:Name="txtTaskType" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtTaskType" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>State</Label>
-                        <ComboBox x:Name="dropdownState" Height="34" Margin="36,10,578,0" ></ComboBox>
+                            <ComboBox x:Name="dropdownState" Height="34" Margin="0,10,720,0" ></ComboBox>
                         <Label>Priority</Label>
-                        <ComboBox x:Name="dropdownPriority" Height="34" Margin="36,10,578,0" ></ComboBox>
+                            <ComboBox x:Name="dropdownPriority" Height="34" Margin="0,10,720,0" ></ComboBox>
                         <Label>Efforts(in hours)</Label>
-                        <TextBox x:Name="txtEfforts" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtEfforts" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Planned Start Date</Label>
-                        <TextBox x:Name="txtPSD" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtPSD" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Planned End Date</Label>
-                        <TextBox x:Name="txtPED" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtPED" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Actual Start Date</Label>
-                        <TextBox x:Name="txtASD" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                            <TextBox x:Name="txtASD" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Actual End Date</Label>
-                        <TextBox x:Name="txtAED" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
-                        <Button x:Name="addtask" Click="AddTaskData" Margin="36,10,578.4,0" Content="Add Task" Height="39" />
-                            <Button x:Name="upd" Click="UpdateTaskData" Margin="36,10,578.4,0" Content="Update Task" Height="39" />
-                            <Button x:Name="cancel" Click="CancelAction" Margin="36,10,578.4,0" Content="Cancel" Height="39" />
+                            <TextBox x:Name="txtAED" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <Button x:Name="addtask" Click="AddTaskData" Margin="0,10,720,0" Content="Add Task" Height="39" />
+                            <Button x:Name="upd" Click="UpdateTaskData" Margin="0,10,720,0" Content="Update Task" Height="39" />
+                            <Button x:Name="cancel" Click="CancelAction" Margin="0,10,720,0" Content="Cancel" Height="39" />
                         </StackPanel>
                         
                     </StackPanel>
@@ -95,32 +98,34 @@
             <TabItem x:Name="reportTab" Header="Reports">
                 <StackPanel >
                     <Label>Select:</Label>
-                    <ComboBox x:Name="combo" Height="33" Margin="167,0,164,0" />
+                    <ComboBox x:Name="combo" Height="33" Margin="0,10,720,0" />
                     <Label>Select Start Date:</Label>
-                    <Calendar x:Name="CalendarSD" ></Calendar>
+                    <!--<Calendar x:Name="CalendarSD" ></Calendar>-->
+                    <TextBox x:Name="txtSD" Height="32" IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                     <Label>Select End Date:</Label>
-                    <Calendar x:Name="CalendarED"></Calendar>
+                    <!--<Calendar x:Name="CalendarED"></Calendar>-->
+                    <TextBox x:Name="txtED" Height="32" IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
 
-                    <Button Content="Generate Report" Height="39" Margin="167,0,164,0" Click="Generate_Report"></Button>
+                    <Button Content="Generate Report" Height="39" Margin="0,10,720,0" Click="Generate_Report"></Button>
                 </StackPanel>
             </TabItem>
             <TabItem x:Name="empTab" Header="Employee Data">
                 <StackPanel >
                     <DataGrid x:Name="empGrid" ItemsSource="{Binding}"  AutoGenerateColumns="False" Height="139" Width="300" HorizontalAlignment="Left">
                         <DataGrid.Columns>
-                            <DataGridTextColumn  Header="Employee ID" Binding="{Binding EmpId}" Width="100"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Employee Name" Binding="{Binding EmpName}" Width="200"></DataGridTextColumn>
+                            <DataGridTextColumn  Header="Employee ID" Binding="{Binding EmpId}" ></DataGridTextColumn>
+                            <DataGridTextColumn Header="Employee Name" Binding="{Binding EmpName}" ></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <Label>Enter ID</Label>
-                    <TextBox x:Name="txtId" Height="35"  IsReadOnly="False" Margin="36,10,578.4,0"/>
+                    <TextBox x:Name="txtId" Height="35"  IsReadOnly="False" Margin="0,10,720,0"/>
                     <Label>Enter Name</Label>
-                    <TextBox x:Name="txtName" Height="34"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                    <TextBox x:Name="txtName" Height="34"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                     <Label>Enter UAID</Label>
-                    <TextBox x:Name="txtUa" Height="34"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
+                    <TextBox x:Name="txtUa" Height="34"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                     <Label>Enter Password</Label>
-                    <TextBox x:Name="txtPwd" Height="32"  IsReadOnly="False" Margin="36,10,578.4,0" ></TextBox>
-                    <Button Click="AddEmployee" Margin="36,10,578.4,0" Content="Add Details" Height="39" />
+                    <TextBox x:Name="txtPwd" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                    <Button Click="AddEmployee" Margin="0,10,720,0" Content="Add Details" Height="39" />
 
                 </StackPanel>
             </TabItem>
