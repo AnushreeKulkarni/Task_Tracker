@@ -1,27 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Configuration;
-using TaskTracker;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.IO;
-using System.Runtime.Remoting;
-using System.Reflection;
 using System.Data;
-using System.Globalization;
+
 
 namespace TaskTrackerWPF
 {
@@ -30,44 +15,48 @@ namespace TaskTrackerWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+
         string filePath = ConfigurationManager.AppSettings["xlsxPath"];
-        
-        public static bool isAdmin = true;
-        string id = "4";
-        public MainWindow()
+        HelperModel helpers = new HelperModel();
+        string id;
+        public static bool isAdmin;
+        public MainWindow(string _id,bool _isAdmin)
         {
             InitializeComponent();
-            empGrid.ItemsSource = BindEmployeeData();
+            id = _id;
+            isAdmin = _isAdmin;
+            Excel.Application xlApp = new Excel.Application();
             List<UserInfo> list2;
-            list2 = BindEmployeeData();
+            list2 = helpers.BindEmployeeData();
             List<ModelTaskTracker> list1;
-            list1 = GetDailyTaskList();
+            list1 = helpers.GetDailyTaskList();
             List<ModelTask> list3;
-            list3 = GetTaskList(id, isAdmin);
-            DailyTaskList(list1, list2, list3);
-            
+            list3 = helpers.GetTaskList(id, isAdmin); 
             Object result;
-            result = DailyTaskList(list1, list2, list3);
+            result = helpers.DailyTaskList(list1, list2, list3);
             if (isAdmin == false)
             {
                 empTab.Visibility = Visibility.Hidden;
                 reportTab.Visibility = Visibility.Hidden;
-                //dailytrackGrid.Width = 650;
                 dailytrackGrid.Columns[0].Visibility = Visibility.Visible;
+                //Populating Daily Task list in the Datagrid
                 dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
                 taskGrid.Columns[7].Visibility = Visibility.Visible;
-                taskGrid.ItemsSource = GetTaskList(id, isAdmin);
+                //Populating Task data in Datagrid
+                taskGrid.ItemsSource = helpers.GetTaskList(id, isAdmin);
 
             }
             else
             {
+                //Populating Daily Task list in the Datagrid
                 dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
                 lblemp.Visibility = Visibility.Visible;
                 dropdownEmp.Visibility = Visibility.Visible;
                 dropdownEmp.ItemsSource = list2;
-                taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                empGrid.ItemsSource = BindEmployeeData();
-
+                //Populating Task data in Datagrid
+                taskGrid.ItemsSource = helpers.GetTaskList(id, isAdmin);
+                //Binding of Employee list to the Datagrid
+                empGrid.ItemsSource = helpers.BindEmployeeData();
             }
             dropdownTask.ItemsSource = list3.Distinct();
             dropdownState.Items.Add("NEW");
@@ -77,301 +66,242 @@ namespace TaskTrackerWPF
             dropdownPriority.Items.Add("LOW");
             dropdownPriority.Items.Add("MEDIUM");
             dropdownPriority.Items.Add("HIGH");
+            dropdownTaskType.Items.Add("Bug");
+            dropdownTaskType.Items.Add("Feature");
+            dropdownTaskType.Items.Add("Daily Task");
+            dropdownTaskType.Items.Add("Weekly Task");
+            dropdownTaskType.Items.Add("Monthly Task");
+            dropdownTaskType.Items.Add("Other");
             combo.Items.Add("ALL");
-
+            if(string.IsNullOrWhiteSpace(txtDate.Text))
+            {
+                txtDate.Text = "dd/mm/yyyy";
+            }
+            if(string.IsNullOrWhiteSpace(txtPSD.Text))
+            {
+                txtPSD.Text = "dd/mm/yyyy";
+            }
+            if(string.IsNullOrWhiteSpace(txtPED.Text))
+            {
+                txtPED.Text = "dd/mm/yyyy";
+            }
+            if(string.IsNullOrWhiteSpace(txtASD.Text))
+            {
+                txtASD.Text = "dd/mm/yyyy";
+            }
+            if(string.IsNullOrWhiteSpace(txtAED.Text))
+            {
+                txtAED.Text = "dd/mm/yyyy";
+            }
+            if(string.IsNullOrWhiteSpace(txtSD.Text))
+            {
+                txtSD.Text = "dd/mm/yyyy";
+            }
+            if(string.IsNullOrWhiteSpace(txtED.Text))
+            {
+                txtED.Text = "dd/mm/yyyy";
+            }
+            xlApp.Quit();
         }
-
-        public List<UserInfo> BindEmployeeData()
+        public void Reload()
         {
-            Excel.Application xlApp = new Excel.Application();
-            List<UserInfo> userList = new List<UserInfo>();
-            Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-            Excel.Worksheet workSheet = workBook.Worksheets[7];
-            Excel.Range range = workSheet.UsedRange;
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            int rowCount = ra.Rows.Count;
             try
             {
-                for (int i = 2; i <=rowCount; i++)
+                List<UserInfo> list2;
+                list2 = helpers.BindEmployeeData();
+                List<ModelTaskTracker> list1;
+                list1 = helpers.GetDailyTaskList();
+                List<ModelTask> list3;
+                list3 = helpers.GetTaskList(id, isAdmin);
+                helpers.DailyTaskList(list1, list2, list3);
+                Object result;
+                result = helpers.DailyTaskList(list1, list2, list3);
+                if (isAdmin == false)
                 {
-                    UserInfo ua = new UserInfo();
-                    if (workSheet.Cells[i, "A"] != null && workSheet.Cells[i, "A"].Value != null)
-                    {
-
-                        ua.EmpName = workSheet.Cells[i, "A"].Value.ToString();
-                    }
-                    else
-                    {
-                        ua.EmpName = "";
-                    }
-                    if (workSheet.Cells[i, "B"] != null && workSheet.Cells[i, "B"].Value != null)
-                    {
-                        ua.EmpId = workSheet.Cells[i, "B"].Value.ToString();
-                    }
-                    else
-                    {
-                        ua.EmpId = "";
-                    }
-                    if (workSheet.Cells[i, "C"] != null && workSheet.Cells[i, "C"].Value != null)
-                    {
-                        ua.UaId = workSheet.Cells[i, "C"].Value.ToString();
-                    }
-                    else
-                    {
-                        ua.UaId = "";
-                    }
-                    if (workSheet.Cells[i, "D"] != null && workSheet.Cells[i, "D"].Value != null)
-                    {
-                        ua.Password = workSheet.Cells[i, "D"].Value.ToString();
-                    }
-                    else
-                    {
-                        ua.Password = "";
-                    }
-                    userList.Add(ua);
+                    dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
+                    taskGrid.ItemsSource = helpers.GetTaskList(id, isAdmin);
+                    List<ModelTask> tasklist;
+                    tasklist = helpers.GetTaskList(id, isAdmin);
+                    var taskid = (from ta in tasklist
+                                  select ta.TaskId).Last();
+                    int Tid = Convert.ToInt32(taskid);
+                    txtTaskId.Text = (Tid + 1).ToString();
+                    txtTaskId.IsReadOnly = true;
                 }
-                workBook.Close();
+                else
+                {
+                    dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
+                    taskGrid.ItemsSource = helpers.GetTaskList(id, isAdmin);
+                    empGrid.ItemsSource = helpers.BindEmployeeData();
+                    List<ModelTask> tasklist;
+                    tasklist = helpers.GetTaskList(id, isAdmin);
+                    var taskid = (from ta in tasklist
+                                  select ta.TaskId).Last();
 
-                xlApp.Quit();
-                GC.Collect();
-                return userList;
+                    int Tid = Convert.ToInt32(taskid);
+                    txtTaskId.Text = (Tid + 1).ToString();
+                    txtTaskId.IsReadOnly = true;
 
+                }
+                dropdownTask.ItemsSource = list3;
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Something went wrong");
             }
-            return null;
         }
+     
 
+
+        //Method to add details of new employee
         private void AddEmployee(object sender, RoutedEventArgs e)
         {      
             Excel.Application xlApp = new Excel.Application();
             Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-            Excel.Worksheet workSheet = workBook.Worksheets[7];
-            Excel.Range range = workSheet.UsedRange;
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            int rowCount = ra.Rows.Count;
-           
+            Excel.Worksheet workSheet = workBook.Worksheets[3];
+            Excel.Range range = workSheet.UsedRange.Columns["A", Type.Missing];
+            int rowCount = range.Rows.Count;
             int i = rowCount + 1;
             try
             {
-                if (i > rowCount)
+                if (!string.IsNullOrWhiteSpace(txtName.Text) && !string.IsNullOrWhiteSpace(txtId.Text) && !string.IsNullOrWhiteSpace(txtUa.Text) && !string.IsNullOrWhiteSpace(txtPwd.Text))
                 {
-                    Console.WriteLine("Data being inserted at:" + i);
-                    workSheet.Cells[i, "A"].Value = txtName.Text.ToString();
-                    workSheet.Cells[i, "B"].Value = txtId.Text.ToString();
-                    workSheet.Cells[i, "C"].Value = txtUa.Text.ToString();
-                    workSheet.Cells[i, "D"].Value = txtPwd.Text.ToString();
-                }
-                MessageBox.Show("Details added successfully");
-                txtId.Text = "";
-                txtName.Text = "";
-                txtUa.Text = "";
-                txtPwd.Text = "";
-                workBook.Save();
-                workBook.Close();
-                xlApp.Quit();
-                GC.Collect();
-                empGrid.ItemsSource = BindEmployeeData();
+                    if (i > rowCount)
+                    {
 
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-        }
-        public List<ModelTask> GetTaskList(string userId, bool isAdmin)
-        {
-            Excel.Application xlApp = new Excel.Application();
-            List<ModelTask> taskList = new List<ModelTask>();
-            Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-            Excel.Worksheet workSheet = workBook.Worksheets[6];
-            Excel.Worksheet workSheetemp = workBook.Worksheets[7];
-            Excel.Range range = workSheet.UsedRange;
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            int rowCount = ra.Rows.Count;
-            Excel.Range rangeemp = workSheetemp.UsedRange;
-            Excel.Range raemp = workSheetemp.UsedRange.Columns["A", Type.Missing];
-            int rowCountemp = raemp.Rows.Count;
-
-            try
-            {
-                for (int i = 3; i <= rowCount; i++)
-                {
-
-                    
-                        ModelTask ta = new ModelTask();
-
-
-                        if (workSheet.Cells[i, "A"] != null && workSheet.Cells[i, "A"].Value != null)
-                        {
-
-                            ta.TicketNumber = workSheet.Cells[i, "A"].Value.ToString();
-                        }
-                        else
-                        {
-                           
-                        }
-                        if (workSheet.Cells[i, "B"] != null && workSheet.Cells[i, "B"].Value != null)
-                        {
-                            ta.TaskId = workSheet.Cells[i, "B"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "C"] != null && workSheet.Cells[i, "C"].Value != null)
-                        {
-                            ta.TaskTitle = workSheet.Cells[i, "C"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "D"] != null && workSheet.Cells[i, "D"].Value != null)
-                        {
-                            ta.TaskDescription = workSheet.Cells[i, "D"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "E"] != null && workSheet.Cells[i, "E"].Value != null)
-                        {
-                            ta.TaskType = workSheet.Cells[i, "E"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "F"] != null && workSheet.Cells[i, "F"].Value != null)
-                        {
-                            ta.State = workSheet.Cells[i, "F"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "G"] != null && workSheet.Cells[i, "G"].Value != null)
-                        {
-                            ta.Priority = workSheet.Cells[i, "G"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "H"] != null && workSheet.Cells[i, "H"].Value != null)
-                        {
-                            for (int j = 3; j <= rowCountemp; j++)
-                            {
-                                if (workSheetemp.Cells[j, "B"] != null && workSheetemp.Cells[j, "B"].Value != null)
-                                {
-                                    if (workSheetemp.Cells[j, "B"].Value.ToString() == workSheet.Cells[i, "H"].Value.ToString())
-                                    {
-
-                                        ta.AssignedTo = workSheetemp.Cells[j, "A"].Value.ToString();
-
-                                    }
-                                    else
-                                    {
-                                        
-                                    }
-                                }
-                                else
-                                {
-                                  
-                                }
-                            }
-                            
-                            
-                        }
-                        else
-                        {
-                           
-                        }
-                        if (workSheet.Cells[i, "I"] != null && workSheet.Cells[i, "I"].Value != null)
-                        {
-                            ta.Efforts = workSheet.Cells[i, "I"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "J"] != null && workSheet.Cells[i, "J"].Value != null)
-                        {
-
-                         ta.PlannedStartDate = workSheet.Cells[i, "J"].Value.ToString();
-                        
-                        }
-                        else
-                        {
-                           
-                        }
-                        if (workSheet.Cells[i, "K"] != null && workSheet.Cells[i, "K"].Value != null)
-                        {
-                            ta.PlannedEndDate = workSheet.Cells[i, "K"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "L"] != null && workSheet.Cells[i, "L"].Value != null)
-                        {
-                            ta.ActualStartDate= workSheet.Cells[i, "L"].Value.ToString();
-                        }
-                        else
-                        {
-                            
-                        }
-                        if (workSheet.Cells[i, "M"] != null && workSheet.Cells[i, "M"].Value != null)
-                        {
-                            ta.ActualEndDate = workSheet.Cells[i, "M"].Value.ToString();
-                        }
-                        else
-                        {
-                           
-                        }
-                       
-                        taskList.Add(ta);
+                        workSheet.Cells[i, "A"].Value = txtName.Text.ToString();
+                        workSheet.Cells[i, "B"].Value = txtId.Text.ToString();
+                        workSheet.Cells[i, "C"].Value = txtUa.Text.ToString();
+                        workSheet.Cells[i, "D"].Value = txtPwd.Text.ToString();
                     }
-          
 
-                workBook.Close();
-                xlApp.Quit();
-                GC.Collect();
-                return taskList;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            return null;
-
-        }
-        public void AddTaskData(object sender, RoutedEventArgs e)
-        {
-            if (dropdownState.SelectedItem.ToString() == "COMPLETED")
-            {
-                if (string.IsNullOrWhiteSpace(txtASD.Text) && string.IsNullOrWhiteSpace(txtAED.Text))
-                {
-                    MessageBox.Show("Please enter Actual Start and End dates");
+                    MessageBox.Show("Details added successfully");
+                    txtId.Text = "";
+                    txtName.Text = "";
+                    txtUa.Text = "";
+                    txtPwd.Text = "";
+                    workBook.Save();
+                    workBook.Close();
+                    xlApp.Quit();
+                    GC.Collect();
+                    empGrid.ItemsSource = helpers.BindEmployeeData();
                 }
                 else
                 {
-                    Excel.Application xlApp = new Excel.Application();
-                    Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-                    Excel.Worksheet workSheet = workBook.Worksheets[6];
-                    Excel.Range range = workSheet.UsedRange;
-                    Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-                    int rowCount = ra.Rows.Count;
-                    int i = rowCount + 1;
+                    MessageBox.Show("Please enter all details");
+                    workBook.Save();
+                    workBook.Close();
+                    xlApp.Quit();
+                    GC.Collect();
+                }
+            }
+            catch (Exception ex)
+            {
+               MessageBox.Show(ex.Message);
+            }
+
+        }
+        //Method to add task data of a new task
+        public void AddTaskData(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dropdownState.SelectedItem.ToString() == "COMPLETED")
+                {
+                    if (string.IsNullOrWhiteSpace(txtASD.Text) && string.IsNullOrWhiteSpace(txtAED.Text) || txtASD.Text.ToString()=="dd/mm/yyyy" && txtAED.Text.ToString()=="dd/mm/yyyy")
+                    {
+                        MessageBox.Show("Please enter Actual Start and End dates");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrWhiteSpace(txtTicket.Text) && !string.IsNullOrWhiteSpace(txtTaskTitle.Text) && !string.IsNullOrWhiteSpace(txtTaskDesc.Text) && !string.IsNullOrEmpty(dropdownState.Text) && !string.IsNullOrEmpty(dropdownPriority.Text) && !string.IsNullOrWhiteSpace(txtEfforts.Text) && !string.IsNullOrWhiteSpace(txtPSD.Text) && !string.IsNullOrWhiteSpace(txtPED.Text))
+                            {
+                                Excel.Application xlApp = new Excel.Application();
+                                Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
+                                Excel.Worksheet workSheet = workBook.Worksheets[2];
+                                Excel.Range range = workSheet.UsedRange.Columns["A", Type.Missing];
+                                int rowCount = range.Rows.Count;
+                                int i = rowCount + 1;
+                                if (i > rowCount)
+                                {
+                                    workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
+                                    workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
+                                    workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
+                                    workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
+                                    workSheet.Cells[i, "E"].Value = dropdownTaskType.SelectedItem.ToString();
+                                    workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
+                                    workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
+                                    workSheet.Cells[i, "H"].Value = id;
+                                    workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
+                                    if (txtPSD.Text.ToString() != "dd/mm/yyyy" && txtPED.Text.ToString() != "dd/mm/yyyy")
+                                    {
+                                        workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
+                                        workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
+                                        workSheet.Cells[i, "L"].Value = txtASD.Text.ToString();
+                                        workSheet.Cells[i, "M"].Value = txtAED.Text.ToString();
+                                        MessageBox.Show("Details Added Successfully");
+                                        txtTicket.Text = "";
+                                        txtTaskId.Text = "";
+                                        txtTaskTitle.Text = "";
+                                        txtTaskDesc.Text = "";
+                                        txtEfforts.Text = "";
+                                        txtPSD.Text = "";
+                                        txtPED.Text = "";
+                                        txtASD.Text = "";
+                                        txtAED.Text = "";
+                                        txtTicket.IsReadOnly = false;
+                                        txtTaskTitle.IsReadOnly = false;
+                                        txtTaskDesc.IsReadOnly = false;
+                                        dropdownPriority.IsEnabled = true;
+                                        txtPSD.IsReadOnly = false;
+                                        txtPED.IsReadOnly = false;
+                                        txtEfforts.IsReadOnly = false;
+                                        workBook.Save();
+                                        workBook.Close();
+                                        xlApp.Quit();
+                                        GC.Collect();
+                                        Reload();
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Please enter Planned Start and End Dates");
+                                        workBook.Save();
+                                        workBook.Close();
+                                        xlApp.Quit();
+                                        GC.Collect();
+
+                                    }        
+                                }
+                       
+                            }
+                            else
+                            {
+                                MessageBox.Show("Fill in all the details");
+                            
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+
+                    }
+
+                }
+                else if (dropdownState.SelectedItem.ToString() != "COMPLETED")
+                {
                     try
                     {
-                        if (txtTicket.Text != null && txtTaskId.Text != null && txtTaskTitle.Text != null && txtTaskDesc.Text != null && txtTaskType.Text != null && dropdownState.SelectedItem != null && dropdownPriority.SelectedItem != null && txtEfforts.Text != null && txtPSD.Text != null && txtPED.Text != null)
+                        if (!string.IsNullOrWhiteSpace(txtTicket.Text) && !string.IsNullOrWhiteSpace(txtTaskId.Text) && !string.IsNullOrWhiteSpace(txtTaskTitle.Text) && !string.IsNullOrWhiteSpace(txtTaskDesc.Text) && !string.IsNullOrEmpty(dropdownState.Text) && !string.IsNullOrEmpty(dropdownPriority.Text) && !string.IsNullOrWhiteSpace(txtEfforts.Text) && !string.IsNullOrWhiteSpace(txtPSD.Text) && !string.IsNullOrWhiteSpace(txtPED.Text))
                         {
+                            Excel.Application xlApp = new Excel.Application();
+                            Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
+                            Excel.Worksheet workSheet = workBook.Worksheets[2];
+                            Excel.Range range = workSheet.UsedRange.Columns["A", Type.Missing];
+                            int rowCount = range.Rows.Count;
+                            int i = rowCount + 1;
                             if (i > rowCount)
                             {
 
@@ -379,93 +309,51 @@ namespace TaskTrackerWPF
                                 workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
                                 workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
                                 workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
-                                workSheet.Cells[i, "E"].Value = txtTaskType.Text.ToString();
+                                workSheet.Cells[i, "E"].Value = dropdownTaskType.SelectedItem.ToString();
                                 workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
                                 workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
                                 workSheet.Cells[i, "H"].Value = id;
                                 workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
-                                workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
-                                workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
-                                workSheet.Cells[i, "L"].Value = txtASD.Text.ToString();
-                                workSheet.Cells[i, "M"].Value = txtAED.Text.ToString();
-
-
+                                if (txtPSD.Text.ToString() != "dd/mm/yyyy" && txtPED.Text.ToString() != "dd/mm/yyyy")
+                                {
+                                    workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
+                                    workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
+                                    workSheet.Cells[i, "L"].Value = "";
+                                    workSheet.Cells[i, "M"].Value = "";
+                                    MessageBox.Show("Details Added Successfully");
+                                    txtTicket.Text = "";
+                                    txtTaskId.Text = "";
+                                    txtTaskTitle.Text = "";
+                                    txtTaskDesc.Text = "";
+                                    txtEfforts.Text = "";
+                                    txtPSD.Text = "";
+                                    txtPED.Text = "";
+                                    txtASD.Text = "";
+                                    txtAED.Text = "";
+                                    dropdownTaskType.Text = "";
+                                    dropdownPriority.Text = "";
+                                    txtTicket.IsReadOnly = false;
+                                    txtTaskTitle.IsReadOnly = false;
+                                    txtTaskDesc.IsReadOnly = false;
+                                    dropdownPriority.IsEnabled = true;
+                                    txtPSD.IsReadOnly = false;
+                                    txtPED.IsReadOnly = false;
+                                    txtEfforts.IsReadOnly = false;
+                                    workBook.Save();
+                                    workBook.Close();
+                                    xlApp.Quit();
+                                    GC.Collect();
+                                    Reload();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Please enter Planned Start and End Dates");
+                                    workBook.Save();
+                                    workBook.Close();
+                                    xlApp.Quit();
+                                    GC.Collect();
+                                }
                             }
-
-
-                            MessageBox.Show("Details Added Successfully");
-                            txtTicket.Text = "";
-                            txtTaskId.Text = "";
-                            txtTaskTitle.Text = "";
-                            txtTaskDesc.Text = "";
-                            txtTaskType.Text = "";
-                            txtEfforts.Text = "";
-                            txtPSD.Text = "";
-                            txtPED.Text = "";
-                            txtASD.Text = "";
-                            txtAED.Text = "";
-
-                            txtTicket.IsReadOnly = false;
-                            txtTaskTitle.IsReadOnly = false;
-                            txtTaskType.IsReadOnly = false;
-                            txtTaskDesc.IsReadOnly = false;
-                            dropdownPriority.IsEnabled = true;
-                            txtPSD.IsReadOnly = false;
-                            txtPED.IsReadOnly = false;
-                            txtEfforts.IsReadOnly = false;
-
-
-                            workBook.Save();
-
-
-                            workBook.Close();
-
-                            xlApp.Quit();
-
-                            GC.Collect();
-
-                            List<UserInfo> list2;
-                            list2 = BindEmployeeData();
-                            List<ModelTaskTracker> list1;
-                            list1 = GetDailyTaskList();
-                            List<ModelTask> list3;
-                            list3 = GetTaskList(id, isAdmin);
-                            DailyTaskList(list1, list2, list3);
-
-                            Object result;
-                            result = DailyTaskList(list1, list2, list3);
-                            if (isAdmin == false)
-                            {
-
-                                dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-
-                                taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                                List<ModelTask> tasklist;
-                                tasklist = GetTaskList(id, isAdmin);
-                                var taskid = (from ta in tasklist
-                                              select ta.TaskId).Last();
-
-                                int Tid = Convert.ToInt32(taskid);
-                                txtTaskId.Text = (Tid + 1).ToString();
-                                txtTaskId.IsReadOnly = true;
-
-                            }
-                            else
-                            {
-                                dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-                                taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                                empGrid.ItemsSource = BindEmployeeData();
-                                List<ModelTask> tasklist;
-                                tasklist = GetTaskList(id, isAdmin);
-                                var taskid = (from ta in tasklist
-                                              select ta.TaskId).Last();
-
-                                int Tid = Convert.ToInt32(taskid);
-                                txtTaskId.Text = (Tid + 1).ToString();
-                                txtTaskId.IsReadOnly = true;
-
-                            }
-                            dropdownTask.ItemsSource = list3;
                         }
                         else
                         {
@@ -476,133 +364,20 @@ namespace TaskTrackerWPF
                     {
                         MessageBox.Show(ex.Message);
                     }
-
                 }
+
             }
-            else
+            catch
             {
-                Excel.Application xlApp = new Excel.Application();
-                Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-                Excel.Worksheet workSheet = workBook.Worksheets[6];
-                Excel.Range range = workSheet.UsedRange;
-                Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-                int rowCount = ra.Rows.Count;
-                int i = rowCount + 1;
-                try
-                {
-                    if (txtTicket.Text != null && txtTaskId.Text != null && txtTaskTitle.Text != null && txtTaskDesc.Text != null && txtTaskType.Text != null && dropdownState.SelectedItem != null && dropdownPriority.SelectedItem != null && txtEfforts.Text != null && txtPSD.Text != null && txtPED.Text != null)
-                    {
-                        if (i > rowCount)
-                        {
+                MessageBox.Show("Fill all details");
 
-                            workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
-                            workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
-                            workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
-                            workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
-                            workSheet.Cells[i, "E"].Value = txtTaskType.Text.ToString();
-                            workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
-                            workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
-                            workSheet.Cells[i, "H"].Value = id;
-                            workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
-                            workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
-                            workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
-                            workSheet.Cells[i, "L"].Value = txtASD.Text.ToString();
-                            workSheet.Cells[i, "M"].Value = txtAED.Text.ToString();
-
-
-                        }
-
-
-                        MessageBox.Show("Details Added Successfully");
-                        txtTicket.Text = "";
-                        txtTaskId.Text = "";
-                        txtTaskTitle.Text = "";
-                        txtTaskDesc.Text = "";
-                        txtTaskType.Text = "";
-                        txtEfforts.Text = "";
-                        txtPSD.Text = "";
-                        txtPED.Text = "";
-                        txtASD.Text = "";
-                        txtAED.Text = "";
-
-                        txtTicket.IsReadOnly = false;
-                        txtTaskTitle.IsReadOnly = false;
-                        txtTaskType.IsReadOnly = false;
-                        txtTaskDesc.IsReadOnly = false;
-                        dropdownPriority.IsEnabled = true;
-                        txtPSD.IsReadOnly = false;
-                        txtPED.IsReadOnly = false;
-                        txtEfforts.IsReadOnly = false;
-
-
-                        workBook.Save();
-
-
-                        workBook.Close();
-
-                        xlApp.Quit();
-
-                        GC.Collect();
-
-                        List<UserInfo> list2;
-                        list2 = BindEmployeeData();
-                        List<ModelTaskTracker> list1;
-                        list1 = GetDailyTaskList();
-                        List<ModelTask> list3;
-                        list3 = GetTaskList(id, isAdmin);
-                        DailyTaskList(list1, list2, list3);
-
-                        Object result;
-                        result = DailyTaskList(list1, list2, list3);
-                        if (isAdmin == false)
-                        {
-
-                            dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-
-                            taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                            List<ModelTask> tasklist;
-                            tasklist = GetTaskList(id, isAdmin);
-                            var taskid = (from ta in tasklist
-                                          select ta.TaskId).Last();
-
-                            int Tid = Convert.ToInt32(taskid);
-                            txtTaskId.Text = (Tid + 1).ToString();
-                            txtTaskId.IsReadOnly = true;
-
-                        }
-                        else
-                        {
-                            dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-                            taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                            empGrid.ItemsSource = BindEmployeeData();
-                            List<ModelTask> tasklist;
-                            tasklist = GetTaskList(id, isAdmin);
-                            var taskid = (from ta in tasklist
-                                          select ta.TaskId).Last();
-
-                            int Tid = Convert.ToInt32(taskid);
-                            txtTaskId.Text = (Tid + 1).ToString();
-                            txtTaskId.IsReadOnly = true;
-
-                        }
-                        dropdownTask.ItemsSource = list3;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Fill in all the details");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
             }
-           
 
         }
+        //Method to update an existing task
         public void UpdateTaskData(object sender, RoutedEventArgs e)
         {
-            if (txtTicket.Text != null && txtTaskId.Text != null && txtTaskTitle.Text != null && txtTaskDesc.Text != null && txtTaskType.Text != null && dropdownState.SelectedItem != null && dropdownPriority.SelectedItem != null && txtEfforts.Text != null )
+            try
             {
                 if (dropdownState.SelectedItem.ToString() == "COMPLETED")
                 {
@@ -617,55 +392,38 @@ namespace TaskTrackerWPF
                         model.TaskId = txtTaskId.Text.ToString();
                         model.TaskTitle = txtTaskTitle.Text.ToString();
                         model.TaskDescription = txtTaskDesc.Text.ToString();
-                        model.TaskType = txtTaskType.Text.ToString();
+                        model.TaskType = dropdownTaskType.SelectedItem.ToString();
                         model.State = dropdownState.SelectedItem.ToString();
                         model.Priority = dropdownPriority.SelectedItem.ToString();
                         model.AssignedTo = id;
                         model.Efforts = txtEfforts.Text.ToString();
-                        model.PlannedStartDate = txtPSD.Text.ToString();
-                        model.PlannedEndDate = txtPED.Text.ToString();
-                        model.ActualStartDate = txtASD.Text.ToString();
-                        model.ActualEndDate = txtAED.Text.ToString();
-                        UpdateTask(model);
-
-
-                        MessageBox.Show("Details Updated Successfully");
-                        txtTicket.Text = "";
-                        txtTaskId.Text = "";
-                        txtTaskTitle.Text = "";
-                        txtTaskDesc.Text = "";
-                        txtTaskType.Text = "";
-                        txtEfforts.Text = "";
-                        txtPSD.Text = "";
-                        txtPED.Text = "";
-                        txtASD.Text = "";
-                        txtAED.Text = "";
-                        List<UserInfo> list2;
-                        list2 = BindEmployeeData();
-                        List<ModelTaskTracker> list1;
-                        list1 = GetDailyTaskList();
-                        List<ModelTask> list3;
-                        list3 = GetTaskList(id, isAdmin);
-                        DailyTaskList(list1, list2, list3);
-
-                        Object result;
-                        result = DailyTaskList(list1, list2, list3);
-                        if (isAdmin == false)
+                        if (txtPED.Text.ToString() != "dd/mm/yyyy" && txtPSD.Text.ToString() != "dd/mm/yyyy")
                         {
-
-                            dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-
-                            taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-
+                            model.PlannedStartDate = txtPSD.Text.ToString();
+                            model.PlannedEndDate = txtPED.Text.ToString();
                         }
-                        else
+                        if (txtASD.Text.ToString() != "dd/mm/yyyy" && txtAED.Text.ToString() != "dd/mm/yyyy")
                         {
-                            dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-                            taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                            empGrid.ItemsSource = BindEmployeeData();
-
+                            model.ActualStartDate = txtASD.Text.ToString();
+                            model.ActualEndDate = txtAED.Text.ToString();
+                            helpers.UpdateTask(model);
+                            MessageBox.Show("Details Updated Successfully");
+                            txtTicket.Text = "";
+                            txtTaskId.Text = "";
+                            txtTaskTitle.Text = "";
+                            txtTaskDesc.Text = "";
+                            txtEfforts.Text = "";
+                            txtPSD.Text = "";
+                            txtPED.Text = "";
+                            txtASD.Text = "";
+                            txtAED.Text = "";
+                            Reload();
                         }
-                        dropdownTask.ItemsSource = list3;
+                       else
+                        {
+                            MessageBox.Show("Please enter Actual Start and End Dates");
+                        }
+
                     }
 
                 }
@@ -676,495 +434,287 @@ namespace TaskTrackerWPF
                     model.TaskId = txtTaskId.Text.ToString();
                     model.TaskTitle = txtTaskTitle.Text.ToString();
                     model.TaskDescription = txtTaskDesc.Text.ToString();
-                    model.TaskType = txtTaskType.Text.ToString();
+                    model.TaskType = dropdownTaskType.SelectedItem.ToString();
                     model.State = dropdownState.SelectedItem.ToString();
                     model.Priority = dropdownPriority.SelectedItem.ToString();
                     model.AssignedTo = id;
                     model.Efforts = txtEfforts.Text.ToString();
                     model.PlannedStartDate = txtPSD.Text.ToString();
                     model.PlannedEndDate = txtPED.Text.ToString();
-                    model.ActualStartDate = txtASD.Text.ToString();
-                    model.ActualEndDate = txtAED.Text.ToString();
-
-                    UpdateTask(model);
-
+                    if (txtASD.Text.ToString() != "dd/mm/yyyy" && txtAED.Text.ToString() != "dd/mm/yyyy")
+                    {
+                        model.ActualStartDate = txtASD.Text.ToString();
+                        model.ActualEndDate = txtAED.Text.ToString();
+                  
+                    }
+                    else
+                    {
+                        model.ActualStartDate = "";
+                        model.ActualEndDate = "";
+                    }
+                    helpers.UpdateTask(model);
                     MessageBox.Show("Details Updated Successfully");
                     txtTicket.Text = "";
                     txtTaskId.Text = "";
                     txtTaskTitle.Text = "";
                     txtTaskDesc.Text = "";
-                    txtTaskType.Text = "";
+
                     txtEfforts.Text = "";
                     txtPSD.Text = "";
                     txtPED.Text = "";
                     txtASD.Text = "";
                     txtAED.Text = "";
-                    List<UserInfo> list2;
-                    list2 = BindEmployeeData();
-                    List<ModelTaskTracker> list1;
-                    list1 = GetDailyTaskList();
-                    List<ModelTask> list3;
-                    list3 = GetTaskList(id, isAdmin);
-                    DailyTaskList(list1, list2, list3);
-
-                    Object result;
-                    result = DailyTaskList(list1, list2, list3);
-                    if (isAdmin == false)
-                    {
-
-                        dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-
-                        taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-
-                    }
-                    else
-                    {
-                        dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-                        taskGrid.ItemsSource = GetTaskList(id, isAdmin);
-                        empGrid.ItemsSource = BindEmployeeData();
-
-                    }
-                    dropdownTask.ItemsSource = list3;
+                    Reload();
                 }
-
             }
-            else
+            catch
             {
-                MessageBox.Show("Fill in all the details");
+                MessageBox.Show("Something went wrong");
             }
         }
-            
-        public List<ModelTaskTracker> GetDailyTaskList()
-        {
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-            Excel.Worksheet workSheet = workBook.Worksheets[1];
-            Excel.Range range = workSheet.UsedRange;
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            int rowCount = ra.Rows.Count;
-            List<ModelTaskTracker> trackerList = new List<ModelTaskTracker>();
-            try
-            {
-                for (int i = 2; i <= rowCount; i++)
-                {
-                        ModelTaskTracker track = new ModelTaskTracker();
-                        if (workSheet.Cells[i, "B"] != null && workSheet.Cells[i, "B"].Value != null)
-                        {
-                            track.EmployeeId = workSheet.Cells[i, "B"].Value.ToString();
-
-                        }
-                        else
-                        {
-                            track.EmployeeId = "No Value";
-                        }
-                        if (workSheet.Cells[i, "C"] != null && workSheet.Cells[i, "C"].Value != null)
-                        {
-                            track.Date = workSheet.Cells[i, "C"].Value.ToString();
-                        }
-                        else
-                        {
-                            track.Date = "No Value";
-                        }
-                        if (workSheet.Cells[i, "D"] != null && workSheet.Cells[i, "D"].Value != null)
-                        {
-                            track.TaskId = workSheet.Cells[i, "D"].Value.ToString();
-                        }
-                        else
-                        {
-                            track.TaskId = "No Value";
-                        }
-                        if (workSheet.Cells[i, "E"] != null && workSheet.Cells[i, "E"].Value != null)
-                        {
-                            track.HoursSpent = Convert.ToInt32(workSheet.Cells[i, "E"].Value);
-                        }
-                        else
-                        {
-                            track.HoursSpent = 0;
-                        }
-                        if (workSheet.Cells[i, "F"] != null && workSheet.Cells[i, "F"].Value != null)
-                        {
-                            track.Remarks = workSheet.Cells[i, "F"].Value.ToString();
-                        }
-                        else
-                        {
-                            track.Remarks = "No Value";
-                        }
-                        trackerList.Add(track);
-
-
-                    }
-                workBook.Close();
-
-                xlApp.Quit();
-                GC.Collect();
-
-
-
-                return trackerList;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return null;
-        }
-        public Object DailyTaskList(List<ModelTaskTracker> trackerList, List<UserInfo> us, List<ModelTask> tasklist)
-        {
-            
-                var List1 = (from m in trackerList
-                             join n in tasklist
-                             on m.TaskId equals n.TaskId
-                             select new { m.EmployeeId, m.Date, m.TaskId, n.TaskTitle, n.TaskType, n.State, n.Priority, m.HoursSpent, m.Remarks }).ToList();
-                var List2 = (from m in trackerList
-                             join n in us
-                             on m.EmployeeId equals n.EmpId
-                             select new { m.TaskId, n.EmpId, n.EmpName }).ToList();
-                var DailyTaskList2 = (from p in List1
-                                      join q in List2
-                                      on p.TaskId equals q.TaskId
-                                      select new { p.EmployeeId, q.EmpName, p.Date, p.TaskId, p.TaskTitle, p.TaskType, p.State, p.Priority, p.HoursSpent, p.Remarks }).Distinct().ToList();
-
-                return DailyTaskList2;
-        }
-
-
-        public List<ReportGenerationModel> GenerateReport(List<ModelTaskTracker> track,List<UserInfo> user, List<ModelTask> task,string startDate, string endDate)
-        {
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-            Excel.Worksheet workSheet = workBook.Worksheets[1];
-            Excel.Worksheet workSheetemp = workBook.Worksheets[7];
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            Excel.Range raa = workSheetemp.UsedRange.Columns["B", Type.Missing];
-            int rowCountemp = raa.Rows.Count;
-            int rowCount = ra.Rows.Count;
-            List<ReportGenerationModel> report = new List<ReportGenerationModel>();
- 
-       
-            var masterList = (from t in track
-                              join ta in task
-                              on t.TaskId equals ta.TaskId
-                              join e in user
-                              on t.EmployeeId equals e.EmpId
-                              where DateTime.Parse(t.Date)>=DateTime.Parse(startDate) && DateTime.Parse(t.Date)<=DateTime.Parse(endDate)
-                              select new { t.EmployeeId, e.EmpName, t.TaskId, ta.TaskType,ta.State,t.Date }).ToList();
-            var name = (from m in masterList
-                        select m.EmpName).Distinct().ToList();
-           
-           
-                foreach (var na in name)
-                {
-                ReportGenerationModel mo = new ReportGenerationModel();
-                mo.EmpName = na;
-                    var bugCount = (from p in track
-                                    join q in task
-                                    on p.TaskId equals q.TaskId
-                                    where q.TaskType.Equals("Bug") && q.AssignedTo.Equals(na)
-                                    select q.TaskId).Distinct().Count(); //use distinct() and check on monday
-                    mo.BugCount = bugCount;
-                    var featureCount = (from p in track
-                                        join q in task
-                                        on p.TaskId equals q.TaskId
-                                        where q.TaskType.Equals("Feature") && q.AssignedTo.Equals(na)
-                                        select q.TaskId).Distinct().Count();
-                    mo.FeatureCount = featureCount;
-
-                    var dailyTaskCount = (from p in track
-                                          join q in task
-                                          on p.TaskId equals q.TaskId
-                                          where q.TaskType.Equals("Daily Task") && q.AssignedTo.Equals(na)
-                                          select q.TaskId).Distinct().Count();
-                    mo.DailyTaskCount = dailyTaskCount;
-
-                    var weeklyTaskCount = (from p in track
-                                           join q in task
-                                           on p.TaskId equals q.TaskId
-                                           where q.TaskType.Equals("Weekly Task") && q.AssignedTo.Equals(na)
-                                           select q.TaskId).Distinct().Count();
-                    mo.WeeklyTaskCount = weeklyTaskCount;
-
-                    var monthlyTaskCount = (from p in track
-                                            join q in task
-                                            on p.TaskId equals q.TaskId
-                                            where q.TaskType.Equals("Monthly Task") && q.AssignedTo.Equals(na)
-                                            select q.TaskId).Distinct().Count();
-                    mo.MonthlyTaskCount = monthlyTaskCount;
-                    var otherCount = (from p in track
-                                      join q in task
-                                      on p.TaskId equals q.TaskId
-                                      where q.TaskType.Equals("Other") && q.AssignedTo.Equals(na)
-                                      select q.TaskId).Distinct().Count();
-                    mo.OthersCount = otherCount;
-                    var totalCount = bugCount + featureCount + dailyTaskCount + weeklyTaskCount + monthlyTaskCount + otherCount;
-                    mo.TotalCount = totalCount;
-
-                    var completedCount = (from p in track
-                                          join q in task
-                                          on p.TaskId equals q.TaskId
-                                          where q.State.Equals("COMPLETED") && q.AssignedTo.Equals(na)
-                                          select q.State).Count();
-                    mo.TotalCompletedCount = completedCount;
-                
-                report.Add(mo);
-                  
-                
-                  
-                }
-                      
-            workBook.Close();
-            xlApp.Quit();
-            GC.Collect();
-            return report;
-
-        }
+        //Method for generating a report
         public void Generate_Report(object sender, RoutedEventArgs e)
         {
-            string reportPath = ConfigurationManager.AppSettings["reportPath"]+"MyReport"+DateTime.Now.ToShortDateString()+".xlsx";
-            if (combo.SelectedItem.ToString() == "ALL")
+            string reportPath = ConfigurationManager.AppSettings["reportPath"]+"Analysis_Report"+DateTime.Now.ToShortDateString()+".xlsx";
+            try
             {
-                List<UserInfo> list2;
-                list2 = BindEmployeeData();
-                List<ModelTaskTracker> list1;
-                list1 = GetDailyTaskList();
-                List<ModelTask> list3;
-                list3 = GetTaskList(id, isAdmin);
-                List<ReportGenerationModel> report;
-                string startDate = txtSD.Text.ToString(); 
-                string endDate = txtED.Text.ToString(); 
-                report = GenerateReport(list1, list2, list3,startDate,endDate);
-            
-
-
-                try
+                if (combo.SelectedItem.ToString() == "ALL")
                 {
-                    Excel.Application app = new Excel.Application();
-                    Excel.Workbook book = app.Workbooks.Add();
-                    Excel.Worksheet work = book.Worksheets[1];
-                    Excel.Range ra = work.UsedRange.Columns["A", Type.Missing];
-                    int count = ra.Rows.Count;
-
-
-                    work.Name = "Report";
-                    work.Cells[1, "A"] = "Employee Name";
-                    work.Cells[1, "B"] = "Bug";
-                    work.Cells[1, "C"] = "Feature";
-                    work.Cells[1, "D"] = "Daily Task";
-                    work.Cells[1, "E"] = "Weekly Task";
-                    work.Cells[1, "F"] = "Monthly Task";
-                    work.Cells[1, "G"] = "Other";
-                    work.Cells[1, "H"] = "Total";
-                    work.Cells[1, "I"] = "Total Completed";
-
-
-                    foreach (var re in report)
+                    List<UserInfo> list2;
+                    list2 = helpers.BindEmployeeData();
+                    List<ModelTaskTracker> list1;
+                    list1 = helpers.GetDailyTaskList();
+                    List<ModelTask> list3;
+                    list3 = helpers.GetTaskList(id, isAdmin);
+                    List<ReportGenerationModel> report;
+                    string startDate = "";
+                    string endDate = "";
+                    if (txtSD.Text.ToString() != "dd/mm/yyyy" && txtED.Text.ToString() != "dd/mm/yyyy")
                     {
-                        count = count + 1;
-
-                        int i = count;
-
-                        work.Cells[i, "A"].Value = re.EmpName;
-                        work.Cells[i, "B"].Value = re.BugCount;
-                        work.Cells[i, "C"].Value = re.FeatureCount;
-                        work.Cells[i, "D"].Value = re.DailyTaskCount;
-                        work.Cells[i, "E"].Value = re.WeeklyTaskCount;
-                        work.Cells[i, "F"].Value = re.MonthlyTaskCount;
-                        work.Cells[i, "G"].Value = re.OthersCount;
-                        work.Cells[i, "H"].Value = re.TotalCount;
-                        work.Cells[i, "I"].Value = re.TotalCompletedCount;
+                         startDate = txtSD.Text.ToString();
+                         endDate = txtED.Text.ToString();
                     }
+                    report = helpers.GenerateReport(list1, list2, list3, startDate, endDate);
+                    try
+                    {
+                        Excel.Application app = new Excel.Application();
+                        Excel.Workbook book = app.Workbooks.Add();
+                        Excel.Worksheet work = book.Worksheets[1];
+                        Excel.Range ra = work.UsedRange.Columns["A", Type.Missing];
+                        int count = ra.Rows.Count;
+                        work.Name = "Report";
+                        work.Cells[1, "A"] = "Employee Name";
+                        work.Cells[1, "B"] = "Bug";
+                        work.Cells[1, "C"] = "Feature";
+                        work.Cells[1, "D"] = "Daily Task";
+                        work.Cells[1, "E"] = "Weekly Task";
+                        work.Cells[1, "F"] = "Monthly Task";
+                        work.Cells[1, "G"] = "Other";
+                        work.Cells[1, "H"] = "Total";
+                        work.Cells[1, "I"] = "Total Completed";
+                        foreach (var re in report)
+                        {
+                            count = count + 1;
 
-                  
-                    book.SaveAs(reportPath);
-                    book.Close();
-                    app.Quit();
-                    MessageBox.Show("Report Generated");
-                    txtSD.Text = "";
-                    txtED.Text = "";
+                            int i = count;
 
+                            work.Cells[i, "A"].Value = re.EmpName;
+                            work.Cells[i, "B"].Value = re.BugCount;
+                            work.Cells[i, "C"].Value = re.FeatureCount;
+                            work.Cells[i, "D"].Value = re.DailyTaskCount;
+                            work.Cells[i, "E"].Value = re.WeeklyTaskCount;
+                            work.Cells[i, "F"].Value = re.MonthlyTaskCount;
+                            work.Cells[i, "G"].Value = re.OthersCount;
+                            work.Cells[i, "H"].Value = re.TotalCount;
+                            work.Cells[i, "I"].Value = re.TotalCompletedCount;
+                        }
+                        book.SaveAs(reportPath);
+                        book.Close();
+                        app.Quit();
+                        MessageBox.Show("Report Generated");
+                        txtSD.Text = "";
+                        txtED.Text = "";
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-                catch (Exception ex)
+                else if (combo.SelectedItem.ToString() == null)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show("Select the option");
+                }
+                else
+                {
+                    MessageBox.Show("Please fill all the fields");
                 }
             }
-           else if( combo.SelectedItem.ToString()==null)
+            catch(Exception ex)
             {
-                MessageBox.Show("Select Option");
+                MessageBox.Show(ex.Message);
             }
-      
-
         }
-
+        //Method to add a new daily task 
         public void AddDailyTask(object sender, RoutedEventArgs e)
         {
             Excel.Application xlApp = new Excel.Application();
             Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
             Excel.Worksheet workSheet = workBook.Worksheets[1];
-            Excel.Range range = workSheet.UsedRange;
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            int rowCount = ra.Rows.Count;
+            Excel.Range range = workSheet.UsedRange.Columns["A", Type.Missing];
+            int rowCount = range.Rows.Count;
             int i = rowCount + 1;
-          
-
             try
             {
                 if (i > rowCount && isAdmin==false)
                 {
-        
                     workSheet.Cells[i, "B"].Value = id;
-                    workSheet.Cells[i, "C"].Value = txtDate.Text.ToString();
-                    workSheet.Cells[i, "D"].Value = dropdownTask.SelectedValue.ToString();
-                    workSheet.Cells[i, "E"].Value = txtHours.Text.ToString();
-                    workSheet.Cells[i, "F"].Value = txtRemarks.Text.ToString();
-
                 }
                 else if(i > rowCount && isAdmin == true)
                 {
                     workSheet.Cells[i, "B"].Value = dropdownEmp.SelectedValue.ToString();
+                }
+                if (txtDate.Text.ToString() != "dd/mm/yyyy")
+                {
                     workSheet.Cells[i, "C"].Value = txtDate.Text.ToString();
                     workSheet.Cells[i, "D"].Value = dropdownTask.SelectedValue.ToString();
                     workSheet.Cells[i, "E"].Value = txtHours.Text.ToString();
                     workSheet.Cells[i, "F"].Value = txtRemarks.Text.ToString();
+                    MessageBox.Show("Details added successfully");
+                    txtDate.Text = "";
+                    txtHours.Text = "";
+                    txtRemarks.Text = "";
+                    workBook.Save();
+                    workBook.Close();
+                    xlApp.Quit();
+                    GC.Collect();
+                    Reload();
                 }
-             
-                MessageBox.Show("Details added successfully");
-                txtDate.Text = "";
-                txtHours.Text = "";
-                txtRemarks.Text = "";
+                else
+                {
+                    MessageBox.Show("Please enter date");
+                    workBook.Save();
+                    workBook.Close();
+                    xlApp.Quit();
+                    GC.Collect();
+                }
+ 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
                 workBook.Save();
                 workBook.Close();
                 xlApp.Quit();
-               
                 GC.Collect();
-     
-                List<UserInfo> list2;
-                list2 = BindEmployeeData();
-                List<ModelTaskTracker> list1;
-                list1 = GetDailyTaskList();
-                List<ModelTask> list3;
-                list3 = GetTaskList(id, isAdmin);
-                DailyTaskList(list1, list2, list3);
-                Object result;
-                result = DailyTaskList(list1, list2, list3);
-                if (isAdmin == false)
-                {
-                    
-                    dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-                }
-                else
-                {
-                    dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
-
-                }
-                dropdownTask.ItemsSource = list3;
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
 
         }
+
         private void dailyTrackGrid_OnLoadingRow(object sender, DataGridRowEventArgs e)
-        {
-          
+        { 
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
-
- 
-
-        public void UpdateTask(ModelTask mtask)
-        {
-
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-            Excel.Worksheet workSheet = workBook.Worksheets[6];
-            Excel.Range range = workSheet.UsedRange;
-            Excel.Range ra = workSheet.UsedRange.Columns["A", Type.Missing];
-            int rowCount = ra.Rows.Count;
-            try { 
-            for (int i = 3; i <= rowCount; i++)
-            {
-
-                if (workSheet.Cells[i, "B"] != null && workSheet.Cells[i, "B"].Value != null && mtask.TaskId == workSheet.Cells[i, "B"].Value.ToString())
-                {
-                    Console.WriteLine("Id found");
-                    workSheet.Cells[i, "A"].Value = txtTicket.Text;
-                    workSheet.Cells[i, "B"].Value = mtask.TaskId;
-                    workSheet.Cells[i, "C"].Value = mtask.TaskTitle;
-                    workSheet.Cells[i, "D"].Value = mtask.TaskDescription;
-                    workSheet.Cells[i, "E"].Value = mtask.TaskType;
-                    workSheet.Cells[i, "F"].Value = mtask.State;
-                    workSheet.Cells[i, "G"].Value = mtask.Priority;
-                    workSheet.Cells[i, "H"].Value = mtask.AssignedTo;
-                    workSheet.Cells[i, "I"].Value = mtask.Efforts;
-                    workSheet.Cells[i, "J"].Value = mtask.PlannedStartDate;
-                    workSheet.Cells[i, "K"].Value = mtask.PlannedEndDate;
-                    workSheet.Cells[i, "L"].Value = mtask.ActualStartDate;
-                    workSheet.Cells[i, "M"].Value = mtask.ActualEndDate;
-
-
-
-                }
-                else
-                {
-          
-
-                }
-
-            }
-            workBook.Save();
-
-
-            workBook.Close();
-
-            xlApp.Quit();
-            GC.Collect();
-
-        }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-        }
-
+        //Method for updating a task
+        
+        //Edit button event handler
         public void EdittTask(object sender, RoutedEventArgs e)
         {
-            editUpdate.Visibility = Visibility.Visible;
-            btnEditTask.Visibility = Visibility.Hidden;
-            btnAddTask.Visibility = Visibility.Hidden;
-            addtask.Visibility = Visibility.Hidden;
-            Edit.Visibility = Visibility.Visible;
-            upd.Visibility = Visibility.Visible;
+            try
+            {
+                if (taskGrid.SelectedCells != null)
+                {
+                    btnEditTask.Visibility = Visibility.Hidden;
+                    btnAddTask.Visibility = Visibility.Hidden;
+                    addtask.Visibility = Visibility.Hidden;
+                    editUpdate.Visibility = Visibility.Visible;
+                    upd.Visibility = Visibility.Visible;
+                    DataGridCellInfo cell0 = taskGrid.SelectedCells[0];
+                    txtTaskId.Text = ((TextBlock)cell0.Column.GetCellContent(cell0.Item)).Text;
+                    DataGridCellInfo cell1 = taskGrid.SelectedCells[1];
+                    txtTicket.Text = ((TextBlock)cell1.Column.GetCellContent(cell1.Item)).Text;
+                    DataGridCellInfo cell2 = taskGrid.SelectedCells[2];
+                    txtTaskTitle.Text = ((TextBlock)cell2.Column.GetCellContent(cell2.Item)).Text;
+                    DataGridCellInfo cell3 = taskGrid.SelectedCells[3];
+                    txtTaskDesc.Text = ((TextBlock)cell3.Column.GetCellContent(cell3.Item)).Text;
+                    DataGridCellInfo cell4 = taskGrid.SelectedCells[4];
+                    dropdownTaskType.Text = ((TextBlock)cell4.Column.GetCellContent(cell4.Item)).Text;
+                    DataGridCellInfo cell5 = taskGrid.SelectedCells[5];
+                    dropdownState.Text = ((TextBlock)cell5.Column.GetCellContent(cell5.Item)).Text;
+                    DataGridCellInfo cell6 = taskGrid.SelectedCells[6];
+                    dropdownPriority.Text = ((TextBlock)cell6.Column.GetCellContent(cell6.Item)).Text;
+                    DataGridCellInfo cell8 = taskGrid.SelectedCells[8];
+                    txtEfforts.Text = ((TextBlock)cell8.Column.GetCellContent(cell8.Item)).Text;
+                    DataGridCellInfo cell9 = taskGrid.SelectedCells[9];
+                    txtPSD.Text = ((TextBlock)cell9.Column.GetCellContent(cell9.Item)).Text;
+                    DataGridCellInfo cell10 = taskGrid.SelectedCells[10];
+                    txtPED.Text = ((TextBlock)cell10.Column.GetCellContent(cell10.Item)).Text;
+                    DataGridCellInfo cell11 = taskGrid.SelectedCells[11];
+                    txtASD.Text = ((TextBlock)cell11.Column.GetCellContent(cell11.Item)).Text;
+                    DataGridCellInfo cell12 = taskGrid.SelectedCells[12];
+                    txtAED.Text = ((TextBlock)cell12.Column.GetCellContent(cell12.Item)).Text;
+                    txtTaskId.IsReadOnly = true;
+                    txtTicket.IsReadOnly = true;
+                    txtTaskTitle.IsReadOnly = true;
+                    dropdownTaskType.IsEnabled = false;
+                    txtTaskDesc.IsReadOnly = true;
+                    dropdownPriority.IsEnabled = false;
+                    txtPSD.IsReadOnly = true;
+                    txtPED.IsReadOnly = true;
+                    txtEfforts.IsReadOnly = true;
+                }
+                else 
+                {
+                    editUpdate.Visibility = Visibility.Hidden;
+                    upd.Visibility = Visibility.Hidden;
+                    btnEditTask.Visibility = Visibility.Visible;
+                    btnAddTask.Visibility = Visibility.Visible;
+                    MessageBox.Show("Please select a row");
+                }
+            }
+            catch
+            {
+                editUpdate.Visibility = Visibility.Hidden;
+                upd.Visibility = Visibility.Hidden;
+                btnEditTask.Visibility = Visibility.Visible;
+                btnAddTask.Visibility = Visibility.Visible;
+                MessageBox.Show("Please select a row");
+            }
 
         }
+        //AddTask button event handler
         public void AddTask(object sender, RoutedEventArgs e)
         {
             List<ModelTask> tasklist;
-            tasklist = GetTaskList(id, isAdmin);
-            var taskid = (from ta in tasklist
-                             select  ta.TaskId).Last();
+            tasklist = helpers.GetTaskList(id, isAdmin);
+            var taskid = "";
+            if (tasklist.Count() != 0)
+            {
+                 taskid = (from ta in tasklist
+                              select ta.TaskId).Last();         
+            }
+            else
+            {
+                taskid = "0";
+            }
             
             int Tid = Convert.ToInt32(taskid);
             txtTaskId.Text = (Tid+1).ToString();
             txtTaskId.IsReadOnly = true;
 
             addtask.Visibility = Visibility.Visible;
-            editUpdate.Visibility = Visibility.Visible;
-           
+            editUpdate.Visibility = Visibility.Visible;   
             btnEditTask.Visibility = Visibility.Hidden;
-            Edit.Visibility = Visibility.Hidden;
             btnAddTask.Visibility = Visibility.Hidden;
             upd.Visibility = Visibility.Hidden;
         }
+        //Cancel button event handler
         public void CancelAction(object sender,RoutedEventArgs e)
         {
                 txtTicket.Text = "";
                 txtTaskId.Text = "";
                 txtTaskTitle.Text = "";
-                txtTaskType.Text = "";
+                dropdownTaskType.Text = "";
                 txtTaskDesc.Text = "";
                 dropdownPriority.Text = "";
                 txtEfforts.Text = "";
@@ -1176,12 +726,7 @@ namespace TaskTrackerWPF
             editUpdate.Visibility = Visibility.Hidden;
             btnAddTask.Visibility = Visibility.Visible;
             btnEditTask.Visibility = Visibility.Visible;
-         
-
-
-
         }
-
         public void AddDailyyTask(object sender, RoutedEventArgs e)
         {
             daily.Visibility = Visibility.Visible;
@@ -1197,62 +742,6 @@ namespace TaskTrackerWPF
             txtRemarks.Text = "";
 
         }
-        public void EditTask(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (taskGrid.SelectedCells != null)
-                {
-                    DataGridCellInfo cell0 = taskGrid.SelectedCells[0];
-                    txtTaskId.Text = ((TextBlock)cell0.Column.GetCellContent(cell0.Item)).Text;
-                    DataGridCellInfo cell1 = taskGrid.SelectedCells[1];
-                    txtTicket.Text = ((TextBlock)cell1.Column.GetCellContent(cell1.Item)).Text;
-                    DataGridCellInfo cell2 = taskGrid.SelectedCells[2];
-                    txtTaskTitle.Text = ((TextBlock)cell2.Column.GetCellContent(cell2.Item)).Text;
-                    DataGridCellInfo cell3 = taskGrid.SelectedCells[3];
-                    txtTaskDesc.Text = ((TextBlock)cell3.Column.GetCellContent(cell3.Item)).Text;
-                    DataGridCellInfo cell4 = taskGrid.SelectedCells[4];
-                    txtTaskType.Text = ((TextBlock)cell4.Column.GetCellContent(cell4.Item)).Text;
-                    DataGridCellInfo cell5 = taskGrid.SelectedCells[5];
-                    dropdownState.Text = ((TextBlock)cell5.Column.GetCellContent(cell5.Item)).Text;
-                    DataGridCellInfo cell6 = taskGrid.SelectedCells[6];
-                    dropdownPriority.Text = ((TextBlock)cell6.Column.GetCellContent(cell6.Item)).Text;     
-                    DataGridCellInfo cell8 = taskGrid.SelectedCells[8];
-                    txtEfforts.Text = ((TextBlock)cell8.Column.GetCellContent(cell8.Item)).Text;
-                    DataGridCellInfo cell9 = taskGrid.SelectedCells[9];
-                    txtPSD.Text= ((TextBlock)cell9.Column.GetCellContent(cell9.Item)).Text;
-                    DataGridCellInfo cell10 = taskGrid.SelectedCells[10];
-                    txtPED.Text = ((TextBlock)cell10.Column.GetCellContent(cell10.Item)).Text;
-                    DataGridCellInfo cell11 = taskGrid.SelectedCells[11];
-                    txtASD.Text = ((TextBlock)cell11.Column.GetCellContent(cell11.Item)).Text;
-                    DataGridCellInfo cell12 = taskGrid.SelectedCells[12];
-                    txtAED.Text = ((TextBlock)cell12.Column.GetCellContent(cell12.Item)).Text;
-                    txtTaskId.IsReadOnly = true;
-                    txtTicket.IsReadOnly = true;
-                    txtTaskTitle.IsReadOnly = true;
-                    txtTaskType.IsReadOnly = true;
-                    txtTaskDesc.IsReadOnly = true;
-                    dropdownPriority.IsEnabled = false;
-                    txtPSD.IsReadOnly = true;
-                    txtPED.IsReadOnly = true;
-                    txtEfforts.IsReadOnly = true;
-               
-
-
-                }
-                else
-                {
-                    MessageBox.Show("Please select a row");
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("Please select a row");
-
-            }
-           
-        }
-
         private void dropdownState_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dropdownState.SelectedItem.ToString() != "COMPLETED")
@@ -1267,5 +756,121 @@ namespace TaskTrackerWPF
 
             }
         }
+
+        private void txtDate_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (txtDate.Text.ToString() == "dd/mm/yyyy")
+            {
+                txtDate.Text = "";
+            }
+        }
+
+        private void txtDate_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtDate.Text))
+            {
+                txtDate.Text = "dd/mm/yyyy";
+            }
+
+        }
+
+        private void txtPSD_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (txtPSD.Text.ToString() == "dd/mm/yyyy")
+            {
+                txtPSD.Text = "";
+            }
+        }
+
+        private void txtPSD_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtPSD.Text))
+            {
+                txtPSD.Text = "dd/mm/yyyy";
+            }
+        }
+
+        private void txtPED_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (txtPED.Text.ToString() == "dd/mm/yyyy")
+            {
+                txtPED.Text = "";
+            }
+        }
+
+        private void txtPED_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtPED.Text))
+            {
+                txtPED.Text = "dd/mm/yyyy";
+            }
+        }
+
+        private void txtASD_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (txtASD.Text.ToString() == "dd/mm/yyyy")
+            {
+                txtASD.Text = "";
+            }
+        }
+
+        private void txtASD_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtASD.Text))
+            {
+                txtASD.Text = "dd/mm/yyyy";
+            }
+        }
+
+        private void txtAED_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (txtAED.Text.ToString() == "dd/mm/yyyy")
+            {
+                txtAED.Text = "";
+            }
+
+        }
+
+        private void txtAED_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtAED.Text))
+            {
+                txtAED.Text = "dd/mm/yyyy";
+            }
+        }
+
+        private void txtSD_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if(txtSD.Text.ToString()=="dd/mm/yyyy")
+            {
+                txtSD.Text = "";
+            }
+
+        }
+
+        private void txtSD_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if(string.IsNullOrWhiteSpace(txtSD.Text))
+            {
+                txtSD.Text = "dd/mm/yyyy";
+            }
+        }
+
+        private void txtED_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if(txtED.Text.ToString()=="dd/mm/yyyy")
+            {
+                txtED.Text = "";
+            }
+        }
+
+        private void txtED_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if(string.IsNullOrWhiteSpace(txtED.Text))
+            {
+                txtED.Text = "dd/mm/yyyy";
+            }
+        }
     }
+
 }

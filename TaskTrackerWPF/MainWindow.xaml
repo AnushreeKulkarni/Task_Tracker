@@ -5,27 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskTrackerWPF"
         mc:Ignorable="d"
-        Title="MainWindow">
+        Title="TaskTracker">
     <Grid>
         <TabControl >
             <TabItem x:Name="tabDailyTask" Header="Task Tracker" Visibility="Visible">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,0,0,-0.4">
                     <StackPanel  Visibility="{Binding Path=Visibility,ElementName=tabDailyTask}">
-                    <DataGrid x:Name="dailytrackGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" Margin="0,0,351.4,0" Height="149" LoadingRow="dailyTrackGrid_OnLoadingRow" HorizontalAlignment="Left">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Employee Name" Binding="{Binding EmpName}" ></DataGridTextColumn>
-                            <DataGridTextColumn Header="Date" Binding="{Binding Date}"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Task Title" Binding="{Binding TaskTitle}"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Hours Spent" Binding="{Binding HoursSpent}" ></DataGridTextColumn>
-                            <DataGridTextColumn Header="Remarks" Binding="{Binding Remarks}"></DataGridTextColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <DataGrid x:Name="dailytrackGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" Margin="0,0,351.4,0" Height="149" LoadingRow="dailyTrackGrid_OnLoadingRow" HorizontalAlignment="Left">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Employee Name" Binding="{Binding EmpName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Task Title" Binding="{Binding TaskTitle}"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Hours Spent" Binding="{Binding HoursSpent}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Remarks" Binding="{Binding Remarks}"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                         <Button x:Name="btnAdd" Click="AddDailyyTask" Margin="0,10,720,0" Content="Add Daily Task" Height="39" />
                         <StackPanel x:Name="daily" Visibility="Hidden">
                         <Label x:Name="lblemp" Visibility="Hidden">Select Employee</Label>
                             <ComboBox x:Name="dropdownEmp" Height="34" Margin="0,10,720,0" Visibility="Hidden" DisplayMemberPath="EmpName" SelectedValuePath="EmpId"></ComboBox>
                             <Label>Date</Label>
-                            <TextBox x:Name="txtDate" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <TextBox x:Name="txtDate"  Height="32"  IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtDate_MouseEnter" MouseLeave="txtDate_MouseLeave" ></TextBox>
                             <Label>TaskList</Label>
                             <ComboBox x:Name="dropdownTask" Height="34" Margin="0,10,720,0" DisplayMemberPath="TaskTitle" SelectedValuePath="TaskId"></ComboBox>
                             <Label>Hours</Label>
@@ -60,10 +60,8 @@
                         </DataGrid>
                         <Button x:Name="btnAddTask" Click="AddTask" Margin="0,10,720,0" Content="Add Task" Height="39" />
                         <Button x:Name="btnEditTask" Click="EdittTask" Margin="0,10,720,0" Content="Edit Task" Height="39" />
-                            
                         <StackPanel x:Name="editUpdate" Visibility="Hidden" >
-                            <Button x:Name="Edit" Click="EditTask" Margin="0,10,720,0" Content="Select" Height="39" />
-                        <Label>Ticket Number</Label>
+                            <Label>Ticket Number</Label>
                             <TextBox x:Name="txtTicket" Height="34" IsReadOnly="False"  Margin="0,10,720,0"></TextBox>
                         <Label>Task ID</Label>
                             <TextBox x:Name="txtTaskId" Height="34"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
@@ -72,21 +70,21 @@
                         <Label>Task Description</Label>
                             <TextBox x:Name="txtTaskDesc" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Task Type</Label>
-                            <TextBox x:Name="txtTaskType" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
-                        <Label>State</Label>
+                            <ComboBox x:Name="dropdownTaskType" Height="34" Margin="0,10,720,0" ></ComboBox>
+                            <Label>State</Label>
                             <ComboBox x:Name="dropdownState" Height="34" Margin="0,10,720,0" SelectionChanged="dropdownState_SelectionChanged" ></ComboBox>
                         <Label>Priority</Label>
                             <ComboBox x:Name="dropdownPriority" Height="34" Margin="0,10,720,0" ></ComboBox>
                         <Label>Efforts(in hours)</Label>
                             <TextBox x:Name="txtEfforts" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                         <Label>Planned Start Date</Label>
-                            <TextBox x:Name="txtPSD" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <TextBox x:Name="txtPSD"  Height="32"  IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtPSD_MouseEnter" MouseLeave="txtPSD_MouseLeave" ></TextBox>
                         <Label>Planned End Date</Label>
-                            <TextBox x:Name="txtPED" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <TextBox x:Name="txtPED" Height="32"  IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtPED_MouseEnter" MouseLeave="txtPED_MouseLeave" ></TextBox>
                         <Label>Actual Start Date</Label>
-                            <TextBox x:Name="txtASD" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <TextBox x:Name="txtASD"  Height="32"  IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtASD_MouseEnter" MouseLeave="txtASD_MouseLeave" ></TextBox>
                         <Label>Actual End Date</Label>
-                            <TextBox x:Name="txtAED" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                            <TextBox x:Name="txtAED"  Height="32"  IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtAED_MouseEnter" MouseLeave="txtAED_MouseLeave" ></TextBox>
                             <Button x:Name="addtask" Click="AddTaskData" Margin="0,10,720,0" Content="Add Task" Height="39" />
                             <Button x:Name="upd" Click="UpdateTaskData" Margin="0,10,720,0" Content="Update Task" Height="39" />
                             <Button x:Name="cancel" Click="CancelAction" Margin="0,10,720,0" Content="Cancel" Height="39" />
@@ -100,11 +98,9 @@
                     <Label>Select:</Label>
                     <ComboBox x:Name="combo" Height="33" Margin="0,10,720,0" />
                     <Label>Select Start Date:</Label>
-                    <!--<Calendar x:Name="CalendarSD" ></Calendar>-->
-                    <TextBox x:Name="txtSD" Height="32" IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                    <TextBox x:Name="txtSD"  Height="32" IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtSD_MouseEnter" MouseLeave="txtSD_MouseLeave" ></TextBox>
                     <Label>Select End Date:</Label>
-                    <!--<Calendar x:Name="CalendarED"></Calendar>-->
-                    <TextBox x:Name="txtED" Height="32" IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                    <TextBox x:Name="txtED"  Height="32" IsReadOnly="False" Margin="0,10,720,0" MouseEnter="txtED_MouseEnter" MouseLeave="txtED_MouseLeave" ></TextBox>
 
                     <Button Content="Generate Report" Height="39" Margin="0,10,720,0" Click="Generate_Report"></Button>
                 </StackPanel>

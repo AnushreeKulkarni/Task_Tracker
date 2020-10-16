@@ -5,3 +5,4 @@ C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.csproj
 C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.exe
 C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.pdb
 C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.csproj.ResolveComReference.cache
+C:\Users\drksu\source\repos\TaskTracker\TaskTracker\obj\Debug\TaskTracker.csprojAssemblyReference.cache
