@@ -481,72 +481,74 @@ namespace TaskTrackerWPF
             string reportPath = ConfigurationManager.AppSettings["reportPath"]+"Analysis_Report"+DateTime.Now.ToShortDateString()+".xlsx";
             try
             {
-                if (combo.SelectedItem.ToString() == "ALL")
+                if (!string.IsNullOrEmpty(txtSD.Text) && !string.IsNullOrWhiteSpace(txtED.Text) && txtSD.Text.ToString() != "dd/mm/yyyy" && txtED.Text.ToString() != "dd/mm/yyyy")
                 {
-                    List<UserInfo> list2;
-                    list2 = helpers.BindEmployeeData();
-                    List<ModelTaskTracker> list1;
-                    list1 = helpers.GetDailyTaskList();
-                    List<ModelTask> list3;
-                    list3 = helpers.GetTaskList(id, isAdmin);
-                    List<ReportGenerationModel> report;
-                    string startDate = "";
-                    string endDate = "";
-                    if (txtSD.Text.ToString() != "dd/mm/yyyy" && txtED.Text.ToString() != "dd/mm/yyyy")
+                    if (combo.SelectedItem.ToString() == "ALL")
                     {
-                         startDate = txtSD.Text.ToString();
-                         endDate = txtED.Text.ToString();
+                        List<UserInfo> list2;
+                        list2 = helpers.BindEmployeeData();
+                        List<ModelTaskTracker> list1;
+                        list1 = helpers.GetDailyTaskList();
+                        List<ModelTask> list3;
+                        list3 = helpers.GetTaskList(id, isAdmin);
+                        List<ReportGenerationModel> report;
+                        string startDate = "";
+                        string endDate = "";
+                            startDate = txtSD.Text.ToString();
+                            endDate = txtED.Text.ToString();
+
+                            report = helpers.GenerateReport(list1, list2, list3, startDate, endDate);
+                            try
+                            {
+                                Excel.Application app = new Excel.Application();
+                                Excel.Workbook book = app.Workbooks.Add();
+                                Excel.Worksheet work = book.Worksheets[1];
+                                Excel.Range ra = work.UsedRange.Columns["A", Type.Missing];
+                                int count = ra.Rows.Count;
+                                work.Name = "Report";
+                                work.Cells[1, "A"] = "Employee Name";
+                                work.Cells[1, "B"] = "Bug";
+                                work.Cells[1, "C"] = "Feature";
+                                work.Cells[1, "D"] = "Daily Task";
+                                work.Cells[1, "E"] = "Weekly Task";
+                                work.Cells[1, "F"] = "Monthly Task";
+                                work.Cells[1, "G"] = "Other";
+                                work.Cells[1, "H"] = "Total";
+                                work.Cells[1, "I"] = "Total Completed";
+                                foreach (var re in report)
+                                {
+                                    count = count + 1;
+
+                                    int i = count;
+
+                                    work.Cells[i, "A"].Value = re.EmpName;
+                                    work.Cells[i, "B"].Value = re.BugCount;
+                                    work.Cells[i, "C"].Value = re.FeatureCount;
+                                    work.Cells[i, "D"].Value = re.DailyTaskCount;
+                                    work.Cells[i, "E"].Value = re.WeeklyTaskCount;
+                                    work.Cells[i, "F"].Value = re.MonthlyTaskCount;
+                                    work.Cells[i, "G"].Value = re.OthersCount;
+                                    work.Cells[i, "H"].Value = re.TotalCount;
+                                    work.Cells[i, "I"].Value = re.TotalCompletedCount;
+                                }
+                                book.SaveAs(reportPath);
+                                book.Close();
+                                app.Quit();
+                                MessageBox.Show("Report Generated");
+                                txtSD.Text = "";
+                                txtED.Text = "";
+
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
                     }
-                    report = helpers.GenerateReport(list1, list2, list3, startDate, endDate);
-                    try
+                    else if (combo.SelectedItem.ToString() != "ALL")
                     {
-                        Excel.Application app = new Excel.Application();
-                        Excel.Workbook book = app.Workbooks.Add();
-                        Excel.Worksheet work = book.Worksheets[1];
-                        Excel.Range ra = work.UsedRange.Columns["A", Type.Missing];
-                        int count = ra.Rows.Count;
-                        work.Name = "Report";
-                        work.Cells[1, "A"] = "Employee Name";
-                        work.Cells[1, "B"] = "Bug";
-                        work.Cells[1, "C"] = "Feature";
-                        work.Cells[1, "D"] = "Daily Task";
-                        work.Cells[1, "E"] = "Weekly Task";
-                        work.Cells[1, "F"] = "Monthly Task";
-                        work.Cells[1, "G"] = "Other";
-                        work.Cells[1, "H"] = "Total";
-                        work.Cells[1, "I"] = "Total Completed";
-                        foreach (var re in report)
-                        {
-                            count = count + 1;
-
-                            int i = count;
-
-                            work.Cells[i, "A"].Value = re.EmpName;
-                            work.Cells[i, "B"].Value = re.BugCount;
-                            work.Cells[i, "C"].Value = re.FeatureCount;
-                            work.Cells[i, "D"].Value = re.DailyTaskCount;
-                            work.Cells[i, "E"].Value = re.WeeklyTaskCount;
-                            work.Cells[i, "F"].Value = re.MonthlyTaskCount;
-                            work.Cells[i, "G"].Value = re.OthersCount;
-                            work.Cells[i, "H"].Value = re.TotalCount;
-                            work.Cells[i, "I"].Value = re.TotalCompletedCount;
-                        }
-                        book.SaveAs(reportPath);
-                        book.Close();
-                        app.Quit();
-                        MessageBox.Show("Report Generated");
-                        txtSD.Text = "";
-                        txtED.Text = "";
-
+                        MessageBox.Show("Select the option");
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-                else if (combo.SelectedItem.ToString() == null)
-                {
-                    MessageBox.Show("Select the option");
+               
                 }
                 else
                 {
@@ -577,25 +579,36 @@ namespace TaskTrackerWPF
                 {
                     workSheet.Cells[i, "B"].Value = dropdownEmp.SelectedValue.ToString();
                 }
-                if (txtDate.Text.ToString() != "dd/mm/yyyy")
+                if (!string.IsNullOrWhiteSpace(dropdownTask.Text) && !string.IsNullOrWhiteSpace(txtHours.Text) && !string.IsNullOrWhiteSpace(txtDate.Text) && !string.IsNullOrWhiteSpace(txtRemarks.Text))
                 {
-                    workSheet.Cells[i, "C"].Value = txtDate.Text.ToString();
-                    workSheet.Cells[i, "D"].Value = dropdownTask.SelectedValue.ToString();
-                    workSheet.Cells[i, "E"].Value = txtHours.Text.ToString();
-                    workSheet.Cells[i, "F"].Value = txtRemarks.Text.ToString();
-                    MessageBox.Show("Details added successfully");
-                    txtDate.Text = "";
-                    txtHours.Text = "";
-                    txtRemarks.Text = "";
-                    workBook.Save();
-                    workBook.Close();
-                    xlApp.Quit();
-                    GC.Collect();
-                    Reload();
+                    if (txtDate.Text.ToString() != "dd/mm/yyyy")
+                    {
+                        workSheet.Cells[i, "C"].Value = txtDate.Text.ToString();
+                        workSheet.Cells[i, "D"].Value = dropdownTask.SelectedValue.ToString();
+                        workSheet.Cells[i, "E"].Value = txtHours.Text.ToString();
+                        workSheet.Cells[i, "F"].Value = txtRemarks.Text.ToString();
+                        MessageBox.Show("Details added successfully");
+                        txtDate.Text = "";
+                        txtHours.Text = "";
+                        txtRemarks.Text = "";
+                        workBook.Save();
+                        workBook.Close();
+                        xlApp.Quit();
+                        GC.Collect();
+                        Reload();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please enter date");
+                        workBook.Save();
+                        workBook.Close();
+                        xlApp.Quit();
+                        GC.Collect();
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Please enter date");
+                    MessageBox.Show("Please fill in all details");
                     workBook.Save();
                     workBook.Close();
                     xlApp.Quit();
