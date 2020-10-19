@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Configuration;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Linq;
 
 namespace TaskTrackerWPF
 {
@@ -28,73 +29,64 @@ namespace TaskTrackerWPF
 
         private void LoginToTaskTracker(object sender, RoutedEventArgs e)
         {
-            HelperModel helper = new HelperModel();
-            string filePath = ConfigurationManager.AppSettings["xlsxPath"];
             try
             {
-                if (!string.IsNullOrWhiteSpace(txtUsername.Text) && !string.IsNullOrWhiteSpace(txtPassword.Text))
+                if (!string.IsNullOrWhiteSpace(txtUsername.Text) && !string.IsNullOrWhiteSpace(txtPassword.Text) && txtUsername.Text.ToString() != "Please enter your ID" && txtPassword.Text.ToString() != "Please enter your password")
                 {
-                   
+                    HelperModel helper = new HelperModel();
+                    List<UserInfo> userList;
+                    userList = helper.BindEmployeeData();
+
                     string userName = txtUsername.Text;
                     string password = txtPassword.Text;
                     bool radioInput = false;
-                    Excel.Application xlApp = new Excel.Application();
-                    Excel.Workbook workBook = xlApp.Workbooks.Open(filePath);
-                    Excel.Worksheet workSheet = workBook.Worksheets[3];
-                    Excel.Range range = workSheet.UsedRange.Columns["A", Type.Missing];
-                    int rowCount = range.Rows.Count;
-                    for (int i = 2; i <= rowCount; i++)
+
+                    var list = (from u in userList
+                                where u.EmpId.Equals(userName) && u.Password.Equals(password)
+                                select new { u.EmpId, u.Password }).ToList();
+                    if (list.Count != 0)
                     {
-                        if (workSheet.Cells[i, "B"] != null && workSheet.Cells[i, "B"].Value != null && workSheet.Cells[i, "D"] != null && workSheet.Cells[i, "D"].Value != null)
+                        if (rbnYes.IsChecked == true)
                         {
-                            if (userName == workSheet.Cells[i, "B"].Value.ToString() && password == workSheet.Cells[i, "D"].Value.ToString())
-                            {
-                                if (rbnYes.IsChecked == true)
-                                {
-                                    radioInput = true;
-                                    MainWindow window = new MainWindow(userName, radioInput);
-                                    window.Show();
-                                    this.Close();
-                                    workBook.Close();
-                                    xlApp.Quit();
-                                    GC.Collect();
-                                }
-                                else if (rbnNo.IsChecked == true)
-                                {
-                                    radioInput = false;
-                                    MainWindow window = new MainWindow(userName, radioInput);
-                                    window.Show();
-                                    this.Close();
-                                    workBook.Close();
-                                    xlApp.Quit();
-                                    GC.Collect();
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Please Select an Option");
-                                    workBook.Close();
-                                    xlApp.Quit();
-                                    GC.Collect();
-                                }
-                            }
-
-
+                            radioInput = true;
+                            MainWindow window = new MainWindow(userName, radioInput);
+                            window.Show();
+                            this.Close();
+                        }
+                        else if (rbnNo.IsChecked == true)
+                        {
+                            radioInput = false;
+                            MainWindow window = new MainWindow(userName, radioInput);
+                            window.Show();
+                            this.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please Select an Option");
 
                         }
-
+                    }
+                    else
+                    {
+                        MessageBox.Show("Username or password is incorrect");
+                        rbnNo.IsChecked = false;
+                        rbnYes.IsChecked = false;
+                        txtUsername.Text = "Please enter your ID";
+                        txtPassword.Text = "Please enter your password";
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please fill in all details");
+
                 }
             }
-
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
-
+                MessageBox.Show("Something went wrong");
             }
+
+
         }
 
         private void txtUsername_MouseEnter(object sender, MouseEventArgs e)

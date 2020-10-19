@@ -208,9 +208,11 @@ namespace TaskTrackerWPF
             {
                 if (dropdownState.SelectedItem.ToString() == "COMPLETED")
                 {
-                    if (string.IsNullOrWhiteSpace(txtASD.Text) && string.IsNullOrWhiteSpace(txtAED.Text) || txtASD.Text.ToString()=="dd/mm/yyyy" && txtAED.Text.ToString()=="dd/mm/yyyy")
+                    if (string.IsNullOrWhiteSpace(txtASD.Text) && string.IsNullOrWhiteSpace(txtAED.Text) || (txtASD.Text.ToString() == "dd/mm/yyyy" && txtAED.Text.ToString() == "dd/mm/yyyy"))
                     {
-                        MessageBox.Show("Please enter Actual Start and End dates");
+                        
+                         MessageBox.Show("Please enter Actual Start and End dates");
+                        
                     }
                     else
                     {
@@ -226,17 +228,17 @@ namespace TaskTrackerWPF
                                 int i = rowCount + 1;
                                 if (i > rowCount)
                                 {
-                                    workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
-                                    workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
-                                    workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
-                                    workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
-                                    workSheet.Cells[i, "E"].Value = dropdownTaskType.SelectedItem.ToString();
-                                    workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
-                                    workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
-                                    workSheet.Cells[i, "H"].Value = id;
-                                    workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
                                     if (txtPSD.Text.ToString() != "dd/mm/yyyy" && txtPED.Text.ToString() != "dd/mm/yyyy")
                                     {
+                                        workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
+                                        workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
+                                        workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
+                                        workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
+                                        workSheet.Cells[i, "E"].Value = dropdownTaskType.SelectedItem.ToString();
+                                        workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
+                                        workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
+                                        workSheet.Cells[i, "H"].Value = id;
+                                        workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
                                         workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
                                         workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
                                         workSheet.Cells[i, "L"].Value = txtASD.Text.ToString();
@@ -304,18 +306,19 @@ namespace TaskTrackerWPF
                             int i = rowCount + 1;
                             if (i > rowCount)
                             {
-
-                                workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
-                                workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
-                                workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
-                                workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
-                                workSheet.Cells[i, "E"].Value = dropdownTaskType.SelectedItem.ToString();
-                                workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
-                                workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
-                                workSheet.Cells[i, "H"].Value = id;
-                                workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
                                 if (txtPSD.Text.ToString() != "dd/mm/yyyy" && txtPED.Text.ToString() != "dd/mm/yyyy")
                                 {
+
+                                    workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
+                                    workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
+                                    workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
+                                    workSheet.Cells[i, "D"].Value = txtTaskDesc.Text.ToString();
+                                    workSheet.Cells[i, "E"].Value = dropdownTaskType.SelectedItem.ToString();
+                                    workSheet.Cells[i, "F"].Value = dropdownState.SelectedItem.ToString();
+                                    workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
+                                    workSheet.Cells[i, "H"].Value = id;
+                                    workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
+                                
                                     workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
                                     workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
                                     workSheet.Cells[i, "L"].Value = "";
@@ -701,6 +704,14 @@ namespace TaskTrackerWPF
             int Tid = Convert.ToInt32(taskid);
             txtTaskId.Text = (Tid+1).ToString();
             txtTaskId.IsReadOnly = true;
+            txtTicket.IsReadOnly = false;
+            txtTaskTitle.IsReadOnly = false;
+            dropdownTaskType.IsEnabled = true;
+            txtTaskDesc.IsReadOnly = false;
+            dropdownPriority.IsEnabled = true;
+            txtPSD.IsReadOnly = false;
+            txtPED.IsReadOnly = false;
+            txtEfforts.IsReadOnly = false;
 
             addtask.Visibility = Visibility.Visible;
             editUpdate.Visibility = Visibility.Visible;   
