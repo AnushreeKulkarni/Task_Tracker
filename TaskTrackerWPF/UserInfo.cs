@@ -12,5 +12,6 @@ namespace TaskTrackerWPF
         public string EmpId { get; set; }
         public string UaId { get; set; }
         public string Password { get; set; }
+        public string AdminAccess { get; set; }
     }
 }

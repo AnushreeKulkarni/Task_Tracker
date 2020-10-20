@@ -36,18 +36,27 @@ namespace TaskTrackerWPF
                     HelperModel helper = new HelperModel();
                     List<UserInfo> userList;
                     userList = helper.BindEmployeeData();
-
                     string userName = txtUsername.Text;
                     string password = txtPassword.Text;
                     bool radioInput = false;
+                    string access = "";
+                    if (rbnYes.IsChecked==true)
+                    {
+                        access = "Yes";
 
+                    }
+                    else if(rbnNo.IsChecked==true)
+                    {
+                        access = "No";
+                    }
                     var list = (from u in userList
-                                where u.EmpId.Equals(userName) && u.Password.Equals(password)
-                                select new { u.EmpId, u.Password }).ToList();
+                                where u.EmpId.Equals(userName) && u.Password.Equals(password) && u.AdminAccess.Equals(access)
+                                select new { u.EmpId, u.Password,u.AdminAccess }).ToList();
                     if (list.Count != 0)
                     {
                         if (rbnYes.IsChecked == true)
                         {
+                            
                             radioInput = true;
                             MainWindow window = new MainWindow(userName, radioInput);
                             window.Show();
@@ -60,15 +69,10 @@ namespace TaskTrackerWPF
                             window.Show();
                             this.Close();
                         }
-                        else
-                        {
-                            MessageBox.Show("Please Select an Option");
-
-                        }
                     }
                     else
                     {
-                        MessageBox.Show("Username or password is incorrect");
+                        MessageBox.Show("Username or password is incorrect or please verify your access type");
                         rbnNo.IsChecked = false;
                         rbnYes.IsChecked = false;
                         txtUsername.Text = "Please enter your ID";

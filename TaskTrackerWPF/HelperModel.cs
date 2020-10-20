@@ -42,6 +42,10 @@ namespace TaskTrackerWPF
                     {
                         userInformation.Password = workSheet.Cells[i, "D"].Value.ToString();
                     }
+                    if(workSheet.Cells[i,"E"]!=null && workSheet.Cells[i,"E"].Value!=null)
+                    {
+                        userInformation.AdminAccess = workSheet.Cells[i, "E"].Value.ToString();
+                    }
                     userList.Add(userInformation);
                 }
                 workBook.Close();

@@ -121,6 +121,9 @@
                     <TextBox x:Name="txtUa" Height="34"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                     <Label>Enter Password</Label>
                     <TextBox x:Name="txtPwd" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                    <Label>Grant Admin Access?</Label>
+                    <RadioButton x:Name="rbnYes" HorizontalAlignment="Left" GroupName="adminAccess" Margin="0,10,720,0">Yes</RadioButton>
+                    <RadioButton x:Name="rbnNo" HorizontalAlignment="Left" GroupName="adminAccess" Margin="0,10,720,0">No</RadioButton>
                     <Button Click="AddEmployee" Margin="0,10,720,0" Content="Add Details" Height="39" />
 
                 </StackPanel>

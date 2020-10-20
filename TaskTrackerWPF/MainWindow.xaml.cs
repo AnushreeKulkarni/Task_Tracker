@@ -164,7 +164,7 @@ namespace TaskTrackerWPF
             int i = rowCount + 1;
             try
             {
-                if (!string.IsNullOrWhiteSpace(txtName.Text) && !string.IsNullOrWhiteSpace(txtId.Text) && !string.IsNullOrWhiteSpace(txtUa.Text) && !string.IsNullOrWhiteSpace(txtPwd.Text))
+                if (!string.IsNullOrWhiteSpace(txtName.Text) && !string.IsNullOrWhiteSpace(txtId.Text) && !string.IsNullOrWhiteSpace(txtUa.Text) && !string.IsNullOrWhiteSpace(txtPwd.Text) &&(rbnYes.IsChecked==true || rbnNo.IsChecked==true ))
                 {
                     if (i > rowCount)
                     {
@@ -173,6 +173,14 @@ namespace TaskTrackerWPF
                         workSheet.Cells[i, "B"].Value = txtId.Text.ToString();
                         workSheet.Cells[i, "C"].Value = txtUa.Text.ToString();
                         workSheet.Cells[i, "D"].Value = txtPwd.Text.ToString();
+                        if(rbnYes.IsChecked==true)
+                        {
+                            workSheet.Cells[i, "E"].Value = "Yes";
+                        }
+                        else if(rbnNo.IsChecked==true)
+                        {
+                            workSheet.Cells[i, "E"].Value = "No";
+                        }
                     }
 
                     MessageBox.Show("Details added successfully");
@@ -180,6 +188,8 @@ namespace TaskTrackerWPF
                     txtName.Text = "";
                     txtUa.Text = "";
                     txtPwd.Text = "";
+                    rbnYes.IsChecked = false;
+                    rbnNo.IsChecked = false;
                     workBook.Save();
                     workBook.Close();
                     xlApp.Quit();
