@@ -13,7 +13,7 @@
                     <StackPanel  Visibility="{Binding Path=Visibility,ElementName=tabDailyTask}">
                         <DataGrid x:Name="dailytrackGrid" ItemsSource="{Binding}" AutoGenerateColumns="False" Margin="0,0,351.4,0" Height="149" LoadingRow="dailyTrackGrid_OnLoadingRow" HorizontalAlignment="Left">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Employee Name" Binding="{Binding EmpName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Employee Name" Binding="{Binding EmpName}"></DataGridTextColumn>
                                 <DataGridTextColumn Header="Date" Binding="{Binding Date}"></DataGridTextColumn>
                                 <DataGridTextColumn Header="Task Title" Binding="{Binding TaskTitle}"></DataGridTextColumn>
                                 <DataGridTextColumn Header="Hours Spent" Binding="{Binding HoursSpent}" ></DataGridTextColumn>
@@ -120,7 +120,7 @@
                     <Label>Enter UAID</Label>
                     <TextBox x:Name="txtUa" Height="34"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
                     <Label>Enter Password</Label>
-                    <TextBox x:Name="txtPwd" Height="32"  IsReadOnly="False" Margin="0,10,720,0" ></TextBox>
+                    <PasswordBox x:Name="txtPwd" Height="32" Margin="0,10,720,0" ></PasswordBox>
                     <Label>Grant Admin Access?</Label>
                     <RadioButton x:Name="rbnYes" HorizontalAlignment="Left" GroupName="adminAccess" Margin="0,10,720,0">Yes</RadioButton>
                     <RadioButton x:Name="rbnNo" HorizontalAlignment="Left" GroupName="adminAccess" Margin="0,10,720,0">No</RadioButton>

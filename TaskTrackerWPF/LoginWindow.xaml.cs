@@ -20,9 +20,9 @@ namespace TaskTrackerWPF
             {
                 txtUsername.Text = "Please enter your ID";
             }
-            if(string.IsNullOrWhiteSpace(txtPassword.Text))
+            if(string.IsNullOrWhiteSpace(txtPassword.Password))
             {
-                txtPassword.Text = "Please enter your password";
+                txtPassword.Password = "Please enter your password";
             }
          
         }
@@ -31,13 +31,13 @@ namespace TaskTrackerWPF
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(txtUsername.Text) && !string.IsNullOrWhiteSpace(txtPassword.Text) && txtUsername.Text.ToString() != "Please enter your ID" && txtPassword.Text.ToString() != "Please enter your password")
+                if (!string.IsNullOrWhiteSpace(txtUsername.Text) && !string.IsNullOrWhiteSpace(txtPassword.Password) && txtUsername.Text.ToString() != "Please enter your ID" && txtPassword.Password.ToString() != "Please enter your password")
                 {
                     HelperModel helper = new HelperModel();
                     List<UserInfo> userList;
                     userList = helper.BindEmployeeData();
                     string userName = txtUsername.Text;
-                    string password = txtPassword.Text;
+                    string password = txtPassword.Password;
                     bool radioInput = false;
                     string access = "";
                     if (rbnYes.IsChecked==true)
@@ -76,7 +76,7 @@ namespace TaskTrackerWPF
                         rbnNo.IsChecked = false;
                         rbnYes.IsChecked = false;
                         txtUsername.Text = "Please enter your ID";
-                        txtPassword.Text = "Please enter your password";
+                        txtPassword.Password = "Please enter your password";
                     }
                 }
                 else
@@ -112,24 +112,24 @@ namespace TaskTrackerWPF
 
         private void txtPassword_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (txtPassword.Text.ToString() == "Please enter your password")
+            if (txtPassword.Password.ToString() == "Please enter your password")
             {
-                txtPassword.Text = "";
+                txtPassword.Password = "";
             }
         }
 
         private void txtPassword_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtPassword.Text))
+            if (string.IsNullOrWhiteSpace(txtPassword.Password))
             {
-                txtPassword.Text = "Please enter your password";
+                txtPassword.Password = "Please enter your password";
             }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             txtUsername.Text = "Please enter your ID";
-            txtPassword.Text = "Please enter your password";
+            txtPassword.Password = "Please enter your password";
             rbnNo.IsChecked = false;
             rbnYes.IsChecked = false;
         }

@@ -9,11 +9,11 @@
     <Grid Margin="0,0,3.8,0.6">
         <TextBlock Height="23" HorizontalAlignment="Left" Margin="10,10,0,0" Name="LoginHeading" Text="Login:" VerticalAlignment="Top" FontSize="17" FontStretch="ExtraCondensed"/>
         <TextBlock Height="50" HorizontalAlignment="Left" Margin="24,48,0,0" Name="textBlockHeading" VerticalAlignment="Top" FontSize="12" FontStyle="Italic" Padding="5"/>
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="58,147,0,0" Name="textBlock1" Text="Username" VerticalAlignment="Top" Width="75" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="58,147,0,0" Name="textBlock1" Text="EmployeeID" VerticalAlignment="Top" Width="75" />
         <TextBlock Height="23" HorizontalAlignment="Left" Margin="56,191,0,0" Name="textBlock2" Text="Password" VerticalAlignment="Top" Width="77" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="135,147,0,0" Name="txtUsername" VerticalAlignment="Top" Width="247" MouseEnter="txtUsername_MouseEnter" MouseLeave="txtUsername_MouseLeave" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="135,191,0,0" Name="txtPassword" VerticalAlignment="Top" Width="247" MouseEnter="txtPassword_MouseEnter" MouseLeave="txtPassword_MouseLeave" />
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="35,232,0,165" Name="textBlock3" Text="Are you an Admin?" Width="107" />
+        <PasswordBox Height="23" HorizontalAlignment="Left" Margin="135,191,0,0" Name="txtPassword" VerticalAlignment="Top" Width="247"  MouseEnter="txtPassword_MouseEnter" MouseLeave="txtPassword_MouseLeave" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="33,231,0,187" Name="textBlock3" Text="Are you an Admin?" Width="107" />
         <RadioButton x:Name="rbnYes" HorizontalAlignment="Left" GroupName="adminAccess" Margin="169,232,0,165">Yes</RadioButton>
         <RadioButton x:Name="rbnNo" HorizontalAlignment="Left" GroupName="adminAccess" Margin="210,232,0,165">No</RadioButton>
         <Button Content="Login" Height="23"  Name="button1" Click="LoginToTaskTracker" Margin="91,278,383.4,119"   />

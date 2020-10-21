@@ -164,7 +164,7 @@ namespace TaskTrackerWPF
             int i = rowCount + 1;
             try
             {
-                if (!string.IsNullOrWhiteSpace(txtName.Text) && !string.IsNullOrWhiteSpace(txtId.Text) && !string.IsNullOrWhiteSpace(txtUa.Text) && !string.IsNullOrWhiteSpace(txtPwd.Text) &&(rbnYes.IsChecked==true || rbnNo.IsChecked==true ))
+                if (!string.IsNullOrWhiteSpace(txtName.Text) && !string.IsNullOrWhiteSpace(txtId.Text) && !string.IsNullOrWhiteSpace(txtUa.Text) && !string.IsNullOrWhiteSpace(txtPwd.Password) &&(rbnYes.IsChecked==true || rbnNo.IsChecked==true ))
                 {
                     if (i > rowCount)
                     {
@@ -172,7 +172,7 @@ namespace TaskTrackerWPF
                         workSheet.Cells[i, "A"].Value = txtName.Text.ToString();
                         workSheet.Cells[i, "B"].Value = txtId.Text.ToString();
                         workSheet.Cells[i, "C"].Value = txtUa.Text.ToString();
-                        workSheet.Cells[i, "D"].Value = txtPwd.Text.ToString();
+                        workSheet.Cells[i, "D"].Value = txtPwd.Password.ToString();
                         if(rbnYes.IsChecked==true)
                         {
                             workSheet.Cells[i, "E"].Value = "Yes";
@@ -187,7 +187,7 @@ namespace TaskTrackerWPF
                     txtId.Text = "";
                     txtName.Text = "";
                     txtUa.Text = "";
-                    txtPwd.Text = "";
+                    txtPwd.Password = "";
                     rbnYes.IsChecked = false;
                     rbnNo.IsChecked = false;
                     workBook.Save();
