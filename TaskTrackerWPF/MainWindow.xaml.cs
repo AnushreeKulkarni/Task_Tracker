@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Configuration;
 using System.Data;
-
+using System.Windows.Threading;
 
 namespace TaskTrackerWPF
 {
@@ -15,9 +15,10 @@ namespace TaskTrackerWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        private EventHandler handler;
+       
         string filePath = ConfigurationManager.AppSettings["xlsxPath"];
-        HelperModel helpers = new HelperModel();
+        HelperClass helpers = new HelperClass();
         string id;
         public static bool isAdmin;
         public MainWindow(string _id,bool _isAdmin)
@@ -26,14 +27,14 @@ namespace TaskTrackerWPF
             id = _id;
             isAdmin = _isAdmin;
             Excel.Application xlApp = new Excel.Application();
-            List<UserInfo> list2;
-            list2 = helpers.BindEmployeeData();
-            List<ModelTaskTracker> list1;
-            list1 = helpers.GetDailyTaskList();
-            List<ModelTask> list3;
-            list3 = helpers.GetTaskList(id, isAdmin); 
+            List<UserInfo> employeeList;
+            employeeList = helpers.BindEmployeeData();
+            List<ModelTaskTracker> dailyList;
+            dailyList = helpers.GetDailyTaskList();
+            List<ModelTask> taskList;
+            taskList = helpers.GetTaskList(id, isAdmin); 
             Object result;
-            result = helpers.DailyTaskList(list1, list2, list3);
+            result = helpers.DailyTaskList(dailyList, employeeList, taskList);
             if (isAdmin == false)
             {
                 empTab.Visibility = Visibility.Hidden;
@@ -52,13 +53,13 @@ namespace TaskTrackerWPF
                 dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
                 lblemp.Visibility = Visibility.Visible;
                 dropdownEmp.Visibility = Visibility.Visible;
-                dropdownEmp.ItemsSource = list2;
+                dropdownEmp.ItemsSource = employeeList;
                 //Populating Task data in Datagrid
                 taskGrid.ItemsSource = helpers.GetTaskList(id, isAdmin);
                 //Binding of Employee list to the Datagrid
                 empGrid.ItemsSource = helpers.BindEmployeeData();
             }
-            dropdownTask.ItemsSource = list3.Distinct();
+            dropdownTask.ItemsSource = taskList.Distinct();
             dropdownState.Items.Add("NEW");
             dropdownState.Items.Add("IN PROGRESS");
             dropdownState.Items.Add("COMPLETED");
@@ -102,20 +103,51 @@ namespace TaskTrackerWPF
                 txtED.Text = "dd/mm/yyyy";
             }
             xlApp.Quit();
+            Int32 timeout = 300;
+            handler = delegate
+            {
+                System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
+                timer.Interval = TimeSpan.FromSeconds(timeout);
+                timer.Tick += delegate
+                {
+                    if (timer != null)
+                    {
+                        timer.Stop();
+                        timer = null;
+                        System.Windows.Interop.ComponentDispatcher.ThreadIdle -= handler;
+                        System.Windows.Interop.ComponentDispatcher.ThreadIdle += handler;
+                        System.Windows.Application.Current.Shutdown();
+
+                    }
+                };
+                timer.Start();
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.Hooks.OperationPosted += delegate
+                {
+                    if (timer != null)
+                    {
+                        timer.Stop();
+                        timer = null;
+                    }
+                };
+
+
+            };
+            System.Windows.Interop.ComponentDispatcher.ThreadIdle += handler;
+
         }
         public void Reload()
         {
             try
             {
-                List<UserInfo> list2;
-                list2 = helpers.BindEmployeeData();
-                List<ModelTaskTracker> list1;
-                list1 = helpers.GetDailyTaskList();
-                List<ModelTask> list3;
-                list3 = helpers.GetTaskList(id, isAdmin);
-                helpers.DailyTaskList(list1, list2, list3);
+                List<UserInfo> employeeList;
+                employeeList = helpers.BindEmployeeData();
+                List<ModelTaskTracker> dailyList;
+                dailyList = helpers.GetDailyTaskList();
+                List<ModelTask> taskList;
+                taskList = helpers.GetTaskList(id, isAdmin);
+                helpers.DailyTaskList(dailyList, employeeList, taskList);
                 Object result;
-                result = helpers.DailyTaskList(list1, list2, list3);
+                result = helpers.DailyTaskList(dailyList, employeeList, taskList);
                 if (isAdmin == false)
                 {
                     dailytrackGrid.ItemsSource = (System.Collections.IEnumerable)result;
@@ -143,7 +175,7 @@ namespace TaskTrackerWPF
                     txtTaskId.IsReadOnly = true;
 
                 }
-                dropdownTask.ItemsSource = list3;
+                dropdownTask.ItemsSource = taskList;
             }
             catch
             {
@@ -240,6 +272,7 @@ namespace TaskTrackerWPF
                                 {
                                     if (txtPSD.Text.ToString() != "dd/mm/yyyy" && txtPED.Text.ToString() != "dd/mm/yyyy")
                                     {
+                                     
                                         workSheet.Cells[i, "A"].Value = txtTicket.Text.ToString();
                                         workSheet.Cells[i, "B"].Value = txtTaskId.Text.ToString();
                                         workSheet.Cells[i, "C"].Value = txtTaskTitle.Text.ToString();
@@ -328,10 +361,17 @@ namespace TaskTrackerWPF
                                     workSheet.Cells[i, "G"].Value = dropdownPriority.SelectedItem.ToString();
                                     workSheet.Cells[i, "H"].Value = id;
                                     workSheet.Cells[i, "I"].Value = txtEfforts.Text.ToString();
-                                
                                     workSheet.Cells[i, "j"].Value = txtPSD.Text.ToString();
                                     workSheet.Cells[i, "K"].Value = txtPED.Text.ToString();
-                                    workSheet.Cells[i, "L"].Value = "";
+                                    if (txtASD.Text.ToString() != "dd/mm/yyyy")
+                                    {
+
+                                        workSheet.Cells[i, "L"].Value = txtASD.Text.ToString();
+                                    }
+                                    else
+                                    {
+                                        workSheet.Cells[i, "L"].Value = "";
+                                    }
                                     workSheet.Cells[i, "M"].Value = "";
                                     MessageBox.Show("Details Added Successfully");
                                     txtTicket.Text = "";
@@ -735,7 +775,8 @@ namespace TaskTrackerWPF
             txtPSD.IsReadOnly = false;
             txtPED.IsReadOnly = false;
             txtEfforts.IsReadOnly = false;
-
+            txtASD.IsEnabled = false;
+            txtAED.IsEnabled = false;
             addtask.Visibility = Visibility.Visible;
             editUpdate.Visibility = Visibility.Visible;   
             btnEditTask.Visibility = Visibility.Hidden;
@@ -785,9 +826,21 @@ namespace TaskTrackerWPF
             }
             else
             {
-                txtASD.IsEnabled = true;
+                txtASD.IsEnabled = false;
                 txtAED.IsEnabled = true;
 
+            }
+            if(dropdownState.SelectedItem.ToString()== "IN PROGRESS")
+            {
+                DateTime today = DateTime.Today;
+                txtASD.Text= today.ToString("dd/MM/yyyy");
+                txtAED.IsEnabled = false;
+            }
+            else if(dropdownState.SelectedItem.ToString()!="COMPLETED" && dropdownState.SelectedItem.ToString()=="NEW" || dropdownState.SelectedItem.ToString()=="BLOCKED")
+            {
+                txtASD.Text = "dd/mm/yyyy";
+                txtASD.IsEnabled = false;
+                txtAED.IsEnabled = false;
             }
         }
 

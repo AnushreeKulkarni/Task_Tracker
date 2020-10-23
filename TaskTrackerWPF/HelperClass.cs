@@ -5,14 +5,12 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Configuration;
 using System.Windows;
 
-
-
-
 namespace TaskTrackerWPF
 {
-    public class HelperModel
+    public class HelperClass
     {
         string filePath = ConfigurationManager.AppSettings["xlsxPath"];
+
         public List<UserInfo> BindEmployeeData()
         {
             Excel.Application xlApp = new Excel.Application();

@@ -13,6 +13,7 @@ namespace TaskTrackerWPF
     /// </summary>
     public partial class Window1 : Window
     {
+        private EventHandler handler;
         public Window1()
         {
             InitializeComponent();
@@ -24,7 +25,37 @@ namespace TaskTrackerWPF
             {
                 txtPassword.Password = "Please enter your password";
             }
-         
+            Int32 timeout = 300;
+            handler = delegate
+            {
+                System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
+                timer.Interval = TimeSpan.FromSeconds(timeout);
+                timer.Tick += delegate
+                {
+                    if (timer != null)
+                    {
+                        timer.Stop();
+                        timer = null;
+                        System.Windows.Interop.ComponentDispatcher.ThreadIdle -= handler;
+                        System.Windows.Interop.ComponentDispatcher.ThreadIdle += handler;
+                        System.Windows.Application.Current.Shutdown();
+
+                    }
+                };
+                timer.Start();
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.Hooks.OperationPosted += delegate
+                {
+                    if (timer != null)
+                    {
+                        timer.Stop();
+                        timer = null;
+                    }
+                };
+
+
+            };
+            System.Windows.Interop.ComponentDispatcher.ThreadIdle += handler;
+
         }
 
         private void LoginToTaskTracker(object sender, RoutedEventArgs e)
@@ -33,7 +64,7 @@ namespace TaskTrackerWPF
             {
                 if (!string.IsNullOrWhiteSpace(txtUsername.Text) && !string.IsNullOrWhiteSpace(txtPassword.Password) && txtUsername.Text.ToString() != "Please enter your ID" && txtPassword.Password.ToString() != "Please enter your password")
                 {
-                    HelperModel helper = new HelperModel();
+                    HelperClass helper = new HelperClass();
                     List<UserInfo> userList;
                     userList = helper.BindEmployeeData();
                     string userName = txtUsername.Text;
@@ -128,10 +159,7 @@ namespace TaskTrackerWPF
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            txtUsername.Text = "Please enter your ID";
-            txtPassword.Password = "Please enter your password";
-            rbnNo.IsChecked = false;
-            rbnYes.IsChecked = false;
+            System.Windows.Application.Current.Shutdown();
         }
     }
 }

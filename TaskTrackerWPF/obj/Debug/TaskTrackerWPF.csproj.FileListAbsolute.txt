@@ -13,10 +13,6 @@ C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\TaskTrackerWPF.
 C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\TaskTrackerWPF.csproj.CoreCompileInputs.cache
 C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\TaskTrackerWPF.exe
 C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\TaskTrackerWPF.pdb
-C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\bin\Debug\TaskTracker.exe
-C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\bin\Debug\TaskTracker.pdb
-C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\bin\Debug\TaskTracker.exe.config
-C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\TaskTrackerWPF.csproj.CopyComplete
 C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\TaskTrackerWPF.csproj.ResolveComReference.cache
 C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\LoginWindow.g.cs
 C:\Users\drksu\source\repos\TaskTracker\TaskTrackerWPF\obj\Debug\LoginWindow.baml

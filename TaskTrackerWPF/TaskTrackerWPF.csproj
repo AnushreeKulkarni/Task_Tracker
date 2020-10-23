@@ -60,7 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="HelperModel.cs" />
+    <Compile Include="HelperClass.cs" />
     <Compile Include="ReportGenerationModel.cs" />
     <Compile Include="UserInfo.cs" />
     <Compile Include="LoginWindow.xaml.cs">
@@ -111,12 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TaskTracker\TaskTracker.csproj">
-      <Project>{54b85238-49f9-4c7a-979f-95f801382dab}</Project>
-      <Name>TaskTracker</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
